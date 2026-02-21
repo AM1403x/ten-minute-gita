@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { useAppColorScheme } from '@/hooks/useAppColorScheme';
 import { useLanguage, hiFontSize, hiLineHeight } from '@/contexts/LanguageContext';
+import { FONTS, letterSpacingStyle } from '@/constants/fonts';
 
 interface ReflectionTeaserProps {
   reflection: string;
@@ -72,12 +73,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    ...letterSpacingStyle(1),
   },
   text: {
     fontSize: 15,
     lineHeight: 24,
-    fontFamily: 'Georgia',
+    fontFamily: FONTS.serifItalic,
     fontStyle: 'italic',
   },
 });

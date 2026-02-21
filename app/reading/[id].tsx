@@ -6,13 +6,19 @@ import {
   StyleSheet,
   Pressable,
   ScrollView,
-  Alert,
+  ActivityIndicator,
   AppState as RNAppState,
+  BackHandler,
+  Platform,
 } from 'react-native';
 import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { cleanupOldDownloads } from '@/utils/downloadStorage';
+import { scheduleDailyReminder } from '@/utils/notifications';
 import Animated from 'react-native-reanimated';
 import { SnippetContent } from '@/components/SnippetContent';
 import { ReadingMenu } from '@/components/ReadingMenu';
@@ -25,11 +31,14 @@ import { getDateString } from '@/utils/storage';
 import { useProgress } from '@/hooks/useProgress';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirstTimeUser } from '@/contexts/FTUEContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { recordCompletionForAuthGate } from '@/utils/authGateStorage';
 import Colors from '@/constants/Colors';
 import { useAppColorScheme } from '@/hooks/useAppColorScheme';
 import { CONFIG, getVoiceColors } from '@/constants/config';
 import { getSearchHighlight } from '@/utils/searchHighlight';
 import { trackScreenView } from '@/utils/sentry';
+import { logger } from '@/utils/logger';
 import { ShareCardModal } from '@/components/share';
 import type { ShareCardContent } from '@/utils/shareCard';
 import { useAudioPlayerContext } from '@/contexts/AudioPlayerContext';
@@ -45,9 +54,44 @@ import { ListenPillState, ChipType } from '@/types/audio';
 import { getChipStartTimes } from '@/utils/sectionHelpers';
 import { useAutoScroll } from '@/hooks/useAutoScroll';
 // useAudioPositionPersistence removed — auto-save now runs in AudioPlayerContext
-import { useDownloadManager } from '@/hooks/useDownloadManager';
+import { useDownloadManager } from '@/contexts/DownloadManagerContext';
 
 let _lastConsumedHighlightId = 0;
+
+/** Standalone header component — owns its own hooks so it re-renders independently. */
+function HeaderDownloadIcon({ snippetId, isContentLocked }: { snippetId: number; isContentLocked: boolean }) {
+  const colorScheme = useAppColorScheme();
+  const colors = Colors[colorScheme];
+  const { isDownloaded, downloadSingleReading, getDownloadProgress } = useDownloadManager();
+
+  if (!CONFIG.DOWNLOADS_ENABLED) return null;
+
+  const downloaded = isDownloaded(snippetId);
+  const progress = getDownloadProgress(snippetId);
+  const downloading = progress !== null;
+
+  // Locked content: show green tick if downloaded, hide otherwise
+  if (isContentLocked && !downloaded) return null;
+
+  return (
+    <Pressable
+      onPress={() => {
+        if (!downloading && !downloaded) {
+          downloadSingleReading(snippetId);
+        }
+      }}
+      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+    >
+      {downloading ? (
+        <ActivityIndicator size="small" color={colors.accent} />
+      ) : downloaded ? (
+        <Ionicons name="checkmark-circle" size={22} color="#4CAF50" />
+      ) : (
+        <Ionicons name="cloud-download-outline" size={22} color={colors.textSecondary} />
+      )}
+    </Pressable>
+  );
+}
 
 export default function ReadingScreen() {
   const { id, mode } = useLocalSearchParams<{ id: string; mode?: string }>();
@@ -57,55 +101,12 @@ export default function ReadingScreen() {
   const colors = Colors[colorScheme];
   const { t, language } = useLanguage();
   const { hasCompletedFirstReading, markFirstReadingComplete } = useFirstTimeUser();
-  const { isDownloaded, downloadSingleReading, getDownloadProgress } = useDownloadManager();
+  const { authState } = useAuth();
+  const isAuthenticated = authState.status === 'authenticated';
+  const { isDownloaded, downloadSingleReading } = useDownloadManager();
+  const insets = useSafeAreaInsets();
 
   const snippetId = parseInt(id || '1', 10);
-  const isReadingDownloaded = CONFIG.DOWNLOADS_ENABLED && isDownloaded(snippetId);
-  const downloadProgress = CONFIG.DOWNLOADS_ENABLED ? getDownloadProgress(snippetId) : null;
-  const isDownloading = downloadProgress !== null;
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <Pressable
-          onPress={() => {
-            if (router.canGoBack()) {
-              router.back();
-            } else {
-              router.push('/(tabs)');
-            }
-          }}
-          style={{ flexDirection: 'row', alignItems: 'center', paddingRight: 16 }}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Ionicons name="chevron-back" size={28} color={colors.accent} />
-          <Text style={{ color: colors.accent, fontSize: 17 }}>Back</Text>
-        </Pressable>
-      ),
-      headerRight: () => (
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          {CONFIG.DOWNLOADS_ENABLED && (
-            <Pressable
-              onPress={() => {
-                Alert.alert(
-                  'Coming Soon',
-                  'Offline downloads will be available in a future update.',
-                );
-              }}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
-              <Ionicons
-                name="cloud-download-outline"
-                size={22}
-                color={colors.textSecondary}
-              />
-            </Pressable>
-          )}
-          <ReadingMenu />
-        </View>
-      ),
-    });
-  }, [navigation, router, colors.accent, colors.textSecondary]);
 
   const { getSnippet } = useSnippets();
   const { markComplete, state } = useApp();
@@ -152,28 +153,58 @@ export default function ReadingScreen() {
     return () => subscription.remove();
   }, []);
 
-  // Update date at midnight (check every minute)
+  // Update date at midnight (check every minute).
+  // Uses a ref to avoid tearing down/recreating the interval when date changes.
+  const todayRef = useRef(today);
+  todayRef.current = today;
+
   useEffect(() => {
-    const checkDateChange = () => {
+    const interval = setInterval(() => {
       const currentDate = getDateString();
-      if (currentDate !== today) {
+      if (currentDate !== todayRef.current) {
         setToday(currentDate);
       }
-    };
-    const interval = setInterval(checkDateChange, 60000);
+    }, 60000);
     return () => clearInterval(interval);
-  }, [today]);
+  }, []);
 
   const hasReadToday = today in readingHistory;
 
   const isReviewMode = isCompleted;
-  const canMarkComplete = isNextToRead && !hasReadToday && !isCompleted;
-  const isNextDay = hasReadToday && snippetId === currentSnippet && !isCompleted;
+  const canMarkComplete = isNextToRead && !isCompleted;
+  const isNextDay = false;
   const isFutureDay = snippetId > currentSnippet && !isCompleted;
-  const showPreviewBadge = isNextDay;
+  const showPreviewBadge = false;
   const showLockedBadge = isFutureDay;
   const isContentLocked = isFutureDay;
-  const isPreviewLimited = isNextDay;
+  const isPreviewLimited = false;
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <Pressable
+          onPress={() => {
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.push('/(tabs)');
+            }
+          }}
+          style={{ flexDirection: 'row', alignItems: 'center', paddingRight: 16 }}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="chevron-back" size={28} color={colors.accent} />
+          <Text style={{ color: colors.accent, fontSize: 17 }}>Back</Text>
+        </Pressable>
+      ),
+      headerRight: () => (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <HeaderDownloadIcon snippetId={snippetId} isContentLocked={isContentLocked} />
+          <ReadingMenu />
+        </View>
+      ),
+    });
+  }, [navigation, router, colors.accent, snippetId, isContentLocked]);
 
   const timeUntilMidnight = useMidnightTimer();
 
@@ -228,6 +259,7 @@ export default function ReadingScreen() {
   }
 
   const isAudioActiveForThisSnippet = audioUIState.playerState !== 'off' && audioUIState.snippetId === snippetId;
+  const isAudioLoading = isAudioActiveForThisSnippet && !audioStatus.isLoaded;
   const isAudioActive = isAudioActiveForThisSnippet;
   const isPillReady = pillLoadedForId === snippetId;
   const showListenPillArea = isAudioAvailable && !isAudioActiveForThisSnippet && !isContentLocked && !isPreviewLimited;
@@ -238,7 +270,7 @@ export default function ReadingScreen() {
     let cancelled = false;
     loadSavedPosition(snippetId).then((saved) => {
       if (cancelled) return;
-      console.log('[AUDIO_DEBUG] pill state load: snippetId=', snippetId, 'saved=', JSON.stringify(saved));
+      logger.warn('ReadingScreen', `pill state load: snippetId=${snippetId} saved=${JSON.stringify(saved)}`);
       if (saved) {
         if (saved.hasListened) {
           setListenPillState('completed');
@@ -281,10 +313,28 @@ export default function ReadingScreen() {
 
   const handleListenPress = useCallback(() => {
     if (snippet) {
-      console.log('[AUDIO_DEBUG] handleListenPress: pillState=', listenPillState, 'snippetId=', snippet.id);
-      loadAndPlay(snippet, language);
+      logger.warn('ReadingScreen', `handleListenPress: pillState=${listenPillState} snippetId=${snippet.id}`);
+      loadAndPlay(snippet, language).catch(() => {
+        // Audio load failed — silently degrade
+      });
     }
   }, [snippet, language, loadAndPlay, listenPillState]);
+
+  // Close button on FullPlayer: pause audio, save position, show "Resume" pill.
+  // Uses refs for audioStatus to avoid recreating this callback every 50ms during playback.
+  const audioStatusRef = useRef(audioStatus);
+  audioStatusRef.current = audioStatus;
+  const audioUIStateRef = useRef(audioUIState);
+  audioUIStateRef.current = audioUIState;
+
+  const handleClosePlayer = useCallback(() => {
+    const currentTime = audioStatusRef.current.currentTime;
+    dismissPlayer();
+    if (currentTime > 0) {
+      setListenPillState('resume');
+      setAudioSavedTime(currentTime / (audioUIStateRef.current.speed || 1));
+    }
+  }, [dismissPlayer]);
 
   // Auto-play: only on the current unread snippet (today's reading opened from home).
   // Already-completed readings and preview/future days never auto-play.
@@ -296,8 +346,10 @@ export default function ReadingScreen() {
     if (!snippet || !isAudioAvailable || isContentLocked || isPreviewLimited) return;
     if (!canMarkComplete) return;
     autoPlayTriggered.current = true;
-    console.log('[AUDIO_DEBUG] auto-play triggering for snippetId=', snippet.id);
-    loadAndPlay(snippet, language);
+    logger.warn('ReadingScreen', `auto-play triggering for snippetId=${snippet.id}`);
+    loadAndPlay(snippet, language).catch(() => {
+      // Audio load failed — silently degrade. disableNativeAudio() already ran inside loadAndPlay.
+    });
   }, [snippet, isAudioAvailable, isContentLocked, isPreviewLimited, canMarkComplete, loadAndPlay, language, isAudioActiveForThisSnippet]);
 
   const handleChipPress = useCallback((chip: ChipType) => {
@@ -314,16 +366,25 @@ export default function ReadingScreen() {
     snippetScrollRef.current = ref;
   }, []);
 
-  // Scroll to top when navigating between snippets (Next/Previous).
-  // useLayoutEffect runs before paint — prevents one stale frame at old scroll position.
-  useLayoutEffect(() => {
-    snippetScrollRef.current?.scrollTo({ y: 0, animated: false });
-  }, [snippetId]);
-
-  const { showBackToNarration, narrationDirection, onUserScrollBegin, onScrollPosition, onActiveParagraphPageY, scrollBackToNarration } = useAutoScroll({
+  const { showBackToNarration, narrationDirection, onUserScrollBegin, onScrollPosition, onActiveParagraphPageY, scrollBackToNarration, resetScrollState } = useAutoScroll({
     scrollRef: snippetScrollRef as React.MutableRefObject<ScrollView | null>,
     isAudioActive,
   });
+
+  // Scroll to top when navigating between snippets (Next/Previous).
+  // useLayoutEffect runs before paint — prevents one stale frame at old scroll position.
+  // Also reset auto-scroll tracking so stale scrollYRef doesn't cause
+  // auto-scroll to compute wrong targets from the previous snippet's position.
+  useLayoutEffect(() => {
+    snippetScrollRef.current?.scrollTo({ y: 0, animated: false });
+    resetScrollState();
+    // Android backup: scrollTo during layout can be dropped by the native ScrollView
+    if (Platform.OS === 'android') {
+      requestAnimationFrame(() => {
+        snippetScrollRef.current?.scrollTo({ y: 0, animated: false });
+      });
+    }
+  }, [snippetId, resetScrollState]);
 
   // Audio position is auto-saved by AudioPlayerContext every 1s while playing.
   // No need for useAudioPositionPersistence here.
@@ -337,16 +398,36 @@ export default function ReadingScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      console.log('[AUDIO_DEBUG] reading screen FOCUSED, snippetId=', snippetId);
+      logger.warn('ReadingScreen', `reading screen FOCUSED, snippetId=${snippetId}`);
       return () => {
         // On blur: dismiss audio completely (stop playback, reset to 'off')
-        console.log('[AUDIO_DEBUG] reading screen BLUR, playerState=', playerStateRef.current, 'snippetId=', snippetId);
+        logger.warn('ReadingScreen', `reading screen BLUR, playerState=${playerStateRef.current} snippetId=${snippetId}`);
         if (playerStateRef.current !== 'off') {
           dismissPlayerRef.current();
         }
       };
     }, [])
   );
+
+  // Android back button: minimize full player instead of navigating away
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+
+    const onBackPress = () => {
+      if (audioUIState.playerState === 'full') {
+        minimizePlayer();
+        return true; // consume the event
+      }
+      if (audioUIState.playerState === 'mini') {
+        dismissPlayer();
+        return true; // consume the event
+      }
+      return false; // let default behavior handle it
+    };
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => subscription.remove();
+  }, [audioUIState.playerState, minimizePlayer, dismissPlayer]);
 
   // Background color: cream when audio active, normal otherwise
   const vc = getVoiceColors(colorScheme);
@@ -371,6 +452,34 @@ export default function ReadingScreen() {
 
     markComplete(snippetId);
 
+    // Reschedule notification with next day's content (fire-and-forget)
+    if (state.progress.settings.notificationsEnabled) {
+      const nextId = Math.min(snippetId + 1, 239);
+      const nextSnippet = getSnippet(nextId);
+      const nextTitle = nextSnippet?.title.replace(/^Day \d+:\s*/, '').replace(/^दिन \d+:\s*/, '') || '';
+      scheduleDailyReminder(
+        state.progress.settings.notificationTime,
+        nextId,
+        nextTitle,
+        state.progress.streak.current,
+        t
+      ).catch(() => {});
+    }
+
+    // Auto-download next 5 readings in background (fire-and-forget)
+    AsyncStorage.getItem('@offline_auto_download').then((val) => {
+      if (val === 'false') return; // default ON when key absent
+      const maxId = Math.min(snippetId + 5, 239);
+      for (let nextId = snippetId + 1; nextId <= maxId; nextId++) {
+        if (!isDownloaded(nextId)) {
+          downloadSingleReading(nextId).catch(() => {});
+        }
+      }
+    }).catch(() => {});
+
+    // Auto-remove old downloads in background (fire-and-forget)
+    cleanupOldDownloads(readingHistory, completedSnippets, language).catch(() => {});
+
     if (!hasCompletedFirstReading && newCompletedCount === 1) {
       markFirstReadingComplete();
     }
@@ -383,7 +492,7 @@ export default function ReadingScreen() {
             await StoreReview.requestReview();
           }
         } catch { /* store review not critical */ }
-      });
+      }).catch(() => { /* native module not available (e.g. Expo Go) */ });
     }
 
     const reflectionText = snippet?.shortReflection || snippet?.verseTranslations?.[0] || '';
@@ -402,6 +511,11 @@ export default function ReadingScreen() {
       setShowMilestone(true);
     } else {
       setShareModalVisible(true);
+    }
+
+    // Record completion for auth gate (consumed on home screen)
+    if (!isAuthenticated) {
+      recordCompletionForAuthGate(false).catch(() => {});
     }
   };
 
@@ -492,14 +606,6 @@ export default function ReadingScreen() {
           )}
         </View>
 
-        {isNextDay && (
-          <View style={[styles.timerBanner, { backgroundColor: colorScheme === 'dark' ? '#2D2D2D' : '#FFF8E1' }]}>
-            <Text style={[styles.timerText, { color: colors.text }]}>
-              {t('reading.nextChapterUnlocks', { time: timeUntilMidnight })}
-            </Text>
-          </View>
-        )}
-
         <PanGestureHandler
           onGestureEvent={onGestureEvent}
           onEnded={onGestureEnd}
@@ -533,7 +639,7 @@ export default function ReadingScreen() {
             style={[
               styles.listenPillContainer,
               { bottom: bottomAreaH + 8 },
-              !isPillVisible && { opacity: 0, pointerEvents: 'none' },
+              (!isPillVisible || showMilestone || shareModalVisible) && { opacity: 0, pointerEvents: 'none' },
             ]}
           >
             {listenPillState === 'fresh' && <FirstTimeTooltip />}
@@ -568,6 +674,19 @@ export default function ReadingScreen() {
                 <View style={[styles.handle, { backgroundColor: colors.border }]} />
               </Pressable>
 
+              {/* Close X button — pauses audio, returns to Resume pill */}
+              {audioUIState.playerState === 'full' && (
+                <Pressable
+                  style={[styles.closeCircle, { backgroundColor: vc.TRACK_BG }]}
+                  onPress={handleClosePlayer}
+                  hitSlop={8}
+                  accessibilityLabel="Close player"
+                  accessibilityRole="button"
+                >
+                  <Ionicons name="close" size={14} color={vc.TEXT_GREY} />
+                </Pressable>
+              )}
+
               {isAudioAvailable && !isContentLocked && !isPreviewLimited && (
                 <SectionChips activeChip={currentChipType} onChipPress={handleChipPress} />
               )}
@@ -577,11 +696,13 @@ export default function ReadingScreen() {
           {audioUIState.playerState === 'full' && (
             <FullPlayer
               isPlaying={audioStatus.playing}
+              isLoading={isAudioLoading}
               hasListened={audioUIState.hasListened}
               currentTime={audioStatus.currentTime}
               duration={audioStatus.duration}
               speed={audioUIState.speed}
               isSpeedExpanded={audioUIState.isSpeedExpanded}
+              safeAreaBottom={insets.bottom}
               onTogglePlayPause={togglePlayPause}
               onSeek={seek}
               onSkipBack={skipBack}
@@ -595,6 +716,7 @@ export default function ReadingScreen() {
           {audioUIState.playerState === 'mini' && (
             <MiniBar
               isPlaying={audioStatus.playing}
+              isLoading={isAudioLoading}
               currentTime={audioStatus.currentTime}
               duration={audioStatus.duration}
               speed={audioUIState.speed}
@@ -620,12 +742,13 @@ export default function ReadingScreen() {
               onNext={navigateToNext}
               onMarkComplete={handleMarkComplete}
               onGoToDay={(day) => router.setParams({ id: String(day) })}
+              safeAreaBottom={insets.bottom}
             />
           )}
         </View>
 
         {showMilestone && achievedMilestone && (
-          <View style={styles.milestoneOverlay}>
+          <View style={styles.milestoneOverlay} accessibilityViewIsModal={true}>
             <View style={[styles.milestoneCard, { backgroundColor: colors.card }]}>
               <Text style={styles.milestoneEmoji}>🎉</Text>
               <Text style={[styles.milestoneTitle, { color: colors.text }]}>
@@ -658,9 +781,14 @@ export default function ReadingScreen() {
                 <Text style={styles.shareVerseButtonText}>{t('share.shareVerse')}</Text>
               </Pressable>
               <Pressable
-                onPress={() => { setShowMilestone(false); setAchievedMilestone(null); navigateHome(); }}
+                onPress={() => {
+                  setShowMilestone(false);
+                  setAchievedMilestone(null);
+                  navigateHome();
+                }}
                 accessibilityLabel={achievedMilestone === 239 ? t('milestone.hariOm') : t('milestone.keepGoing')}
                 accessibilityRole="button"
+                testID="milestone-keep-going"
               >
                 <Text style={[styles.milestoneContinue, { color: colors.accent }]}>
                   {achievedMilestone === 239 ? t('milestone.hariOm') : t('milestone.keepGoing')}
@@ -709,6 +837,7 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
     zIndex: 10,
+    elevation: 10,
   },
   pillFloating: {
     position: 'absolute',
@@ -716,9 +845,11 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
     zIndex: 25,
+    elevation: 25,
   },
   bottomFixed: {
     borderTopWidth: 1,
+    overflow: 'visible',
   },
   handleArea: {
     alignItems: 'center' as const,
@@ -728,6 +859,22 @@ const styles = StyleSheet.create({
     width: 36,
     height: 4,
     borderRadius: 2,
+  },
+  closeCircle: {
+    position: 'absolute' as const,
+    top: -13,
+    right: 14,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    zIndex: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    elevation: 2,
   },
   errorText: { fontSize: 16, textAlign: 'center', marginTop: 100 },
   milestoneOverlay: {

@@ -9,11 +9,13 @@ import { SpeedToggle } from './SpeedToggle';
 
 interface FullPlayerProps {
   isPlaying: boolean;
+  isLoading?: boolean;
   hasListened?: boolean;
   currentTime: number;
   duration: number;
   speed: number;
   isSpeedExpanded: boolean;
+  safeAreaBottom?: number;
   onTogglePlayPause: () => void;
   onSeek: (time: number) => void;
   onSkipBack: () => void;
@@ -25,6 +27,7 @@ interface FullPlayerProps {
 
 export function FullPlayer({
   isPlaying,
+  isLoading,
   hasListened,
   currentTime,
   duration,
@@ -37,11 +40,12 @@ export function FullPlayer({
   onSpeedChange,
   onToggleSpeedPanel,
   onMinimize,
+  safeAreaBottom = 0,
 }: FullPlayerProps) {
   const vc = getVoiceColors(useAppColorScheme());
 
   return (
-    <View style={[styles.container, { backgroundColor: vc.CREAM }]}>
+    <View style={[styles.container, { backgroundColor: vc.CREAM, paddingBottom: Math.max(32, safeAreaBottom + 12) }]}>
       {/* Scrub Bar */}
       <ScrubBar currentTime={currentTime} duration={duration} speed={speed} onSeek={onSeek} />
 
@@ -51,6 +55,7 @@ export function FullPlayer({
       {/* Core Controls */}
       <CoreControls
         isPlaying={isPlaying}
+        isLoading={isLoading}
         hasListened={hasListened}
         onTogglePlayPause={onTogglePlayPause}
         onSkipBack={onSkipBack}

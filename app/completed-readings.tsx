@@ -7,6 +7,8 @@ import {
   Pressable,
   StyleSheet,
   Keyboard,
+  BackHandler,
+  Platform,
 } from 'react-native';
 import { useRouter, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,6 +17,7 @@ import { useSnippets } from '@/hooks/useSnippets';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAppColorScheme } from '@/hooks/useAppColorScheme';
 import Colors from '@/constants/Colors';
+import { letterSpacingStyle } from '@/constants/fonts';
 import { setSearchHighlight } from '@/utils/searchHighlight';
 
 interface ReadingItem {
@@ -77,6 +80,20 @@ export default function CompletedReadingsScreen() {
       ),
     });
   }, [navigation, router, colors, t]);
+
+  // Android: dismiss keyboard on back press before navigating
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+
+    const onBackPress = () => {
+      // If keyboard is up (search input focused), dismiss it first
+      Keyboard.dismiss();
+      return false; // let default back navigation proceed
+    };
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => subscription.remove();
+  }, []);
 
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
@@ -279,6 +296,7 @@ export default function CompletedReadingsScreen() {
             autoCorrect={false}
             autoCapitalize="none"
             returnKeyType="search"
+            underlineColorAndroid="transparent"
           />
           {query.length > 0 && (
             <Pressable onPress={clearSearch} hitSlop={8}>
@@ -383,7 +401,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    ...letterSpacingStyle(0.5),
     marginBottom: 3,
   },
   contextText: {

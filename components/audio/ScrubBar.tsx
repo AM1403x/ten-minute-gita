@@ -1,5 +1,5 @@
-import React, { useCallback, useRef, useState } from 'react';
-import { View, Text, StyleSheet, PanResponder, LayoutChangeEvent } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { View, Text, StyleSheet, PanResponder, Animated, LayoutChangeEvent } from 'react-native';
 import { getVoiceColors } from '@/constants/config';
 import { useAppColorScheme } from '@/hooks/useAppColorScheme';
 import { formatTime } from '@/utils/sectionHelpers';
@@ -11,73 +11,124 @@ interface ScrubBarProps {
   onSeek: (time: number) => void;
 }
 
+const THUMB_SIZE = 22;
+const THUMB_RADIUS = THUMB_SIZE / 2;
+
 export function ScrubBar({ currentTime, duration, speed, onSeek }: ScrubBarProps) {
   const vc = getVoiceColors(useAppColorScheme());
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragPosition, setDragPosition] = useState(0);
-  const trackWidth = useRef(0);
-  const trackX = useRef(0);
 
-  const progress = duration > 0 ? (isDragging ? dragPosition : currentTime) / duration : 0;
-  const clampedProgress = Math.max(0, Math.min(1, progress));
+  // Refs for gesture math — avoids stale closures and re-renders during drag
+  const trackWidthRef = useRef(0);
+  const trackXRef = useRef(0);
+  const isDraggingRef = useRef(false);
+  const durationRef = useRef(duration);
+  durationRef.current = duration;
+  const onSeekRef = useRef(onSeek);
+  onSeekRef.current = onSeek;
 
-  const getTimeFromPosition = useCallback((pageX: number) => {
-    const relativeX = pageX - trackX.current;
-    const ratio = Math.max(0, Math.min(1, relativeX / trackWidth.current));
-    return ratio * duration;
-  }, [duration]);
+  // Animated value (0–1) drives thumb + fill without re-renders
+  const animProgress = useRef(new Animated.Value(0)).current;
 
-  const panResponder = useRef(
+  // Timestamp shown during drag (null = show currentTime from props)
+  const [dragTime, setDragTime] = useState<number | null>(null);
+
+  // Sync playback position → animated value when NOT dragging
+  useEffect(() => {
+    if (!isDraggingRef.current && duration > 0) {
+      animProgress.setValue(currentTime / duration);
+    }
+  }, [currentTime, duration, animProgress]);
+
+  const clampRatio = (pageX: number): number => {
+    if (trackWidthRef.current <= 0) return 0;
+    const rel = pageX - trackXRef.current;
+    return Math.max(0, Math.min(1, rel / trackWidthRef.current));
+  };
+
+  const panResponder = useMemo(() =>
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: (evt) => {
-        setIsDragging(true);
-        const time = getTimeFromPosition(evt.nativeEvent.pageX);
-        setDragPosition(time);
+        isDraggingRef.current = true;
+        const ratio = clampRatio(evt.nativeEvent.pageX);
+        animProgress.setValue(ratio);
+        setDragTime(ratio * durationRef.current);
       },
       onPanResponderMove: (evt) => {
-        const time = getTimeFromPosition(evt.nativeEvent.pageX);
-        setDragPosition(time);
+        const ratio = clampRatio(evt.nativeEvent.pageX);
+        // Animated.setValue is synchronous and cheap — moves thumb instantly
+        animProgress.setValue(ratio);
+        setDragTime(ratio * durationRef.current);
       },
       onPanResponderRelease: (evt) => {
-        const time = getTimeFromPosition(evt.nativeEvent.pageX);
-        onSeek(time);
-        setIsDragging(false);
+        const ratio = clampRatio(evt.nativeEvent.pageX);
+        const time = ratio * durationRef.current;
+        isDraggingRef.current = false;
+        setDragTime(null);
+        onSeekRef.current(time);
       },
       onPanResponderTerminate: () => {
-        setIsDragging(false);
+        isDraggingRef.current = false;
+        setDragTime(null);
       },
-    })
-  ).current;
+    }),
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [],
+  );
 
   const onTrackLayout = useCallback((event: LayoutChangeEvent) => {
-    event.target.measure((_x: number, _y: number, _width: number, _height: number, pageX: number) => {
-      trackX.current = pageX;
-      trackWidth.current = _width;
+    event.target.measure((_x: number, _y: number, width: number, _h: number, pageX: number) => {
+      trackXRef.current = pageX;
+      trackWidthRef.current = width;
     });
   }, []);
+
+  // Interpolate 0–1 → '0%' to '100%' for fill width and thumb left
+  const fillWidth = animProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0%', '100%'],
+    extrapolate: 'clamp',
+  });
+
+  const thumbLeft = animProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0%', '100%'],
+    extrapolate: 'clamp',
+  });
+
+  const shownTime = dragTime !== null ? dragTime : currentTime;
 
   return (
     <View style={styles.container}>
       <View
         style={styles.trackContainer}
         onLayout={onTrackLayout}
+        collapsable={false}
         {...panResponder.panHandlers}
       >
+        {/* Track background */}
         <View style={[styles.track, { backgroundColor: vc.TRACK_BG }]}>
-          <View style={[styles.trackFill, { width: `${clampedProgress * 100}%`, backgroundColor: vc.CORAL }]} />
+          {/* Fill bar — driven by Animated interpolation */}
+          <Animated.View
+            style={[styles.trackFill, { backgroundColor: vc.CORAL, width: fillWidth }]}
+          />
         </View>
-        <View
+        {/* Thumb — positioned via Animated percentage */}
+        <Animated.View
           style={[
             styles.thumb,
-            { left: `${clampedProgress * 100}%`, marginLeft: -11, backgroundColor: vc.CORAL },
+            { backgroundColor: vc.CORAL, left: thumbLeft, marginLeft: -THUMB_RADIUS },
           ]}
         />
       </View>
       <View style={styles.timestamps}>
-        <Text style={[styles.timestamp, { color: vc.TEXT_GREY }]}>{formatTime((isDragging ? dragPosition : currentTime) / speed)}</Text>
-        <Text style={[styles.timestamp, { color: vc.TEXT_GREY }]}>{formatTime(duration / speed)}</Text>
+        <Text style={[styles.timestamp, { color: vc.TEXT_GREY }]}>
+          {formatTime(shownTime / speed)}
+        </Text>
+        <Text style={[styles.timestamp, { color: vc.TEXT_GREY }]}>
+          {formatTime(duration / speed)}
+        </Text>
       </View>
     </View>
   );
@@ -103,9 +154,9 @@ const styles = StyleSheet.create({
   },
   thumb: {
     position: 'absolute',
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: THUMB_SIZE,
+    height: THUMB_SIZE,
+    borderRadius: THUMB_RADIUS,
     shadowColor: 'rgba(232, 114, 92, 0.4)',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 1,

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Settings } from '@/types';
 import Colors from '@/constants/Colors';
+import { letterSpacingStyle } from '@/constants/fonts';
 import { LanguageToggle } from '@/components/LanguageToggle';
 
 interface AppearanceSettingsProps {
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    ...letterSpacingStyle(1),
     marginBottom: 8,
     marginLeft: 20,
     marginTop: 8,

@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Platform } from 'react-native';
 import { HighlightText } from './HighlightText';
+import { FONTS } from '@/constants/fonts';
 
 interface VerseBlockProps {
   index: number;
@@ -36,9 +37,10 @@ export function VerseBlock({
           editable={false}
           multiline
           scrollEnabled={false}
+          underlineColorAndroid="transparent"
           style={[
             styles.sanskritText,
-            { color: colors.text, fontSize: fontSize + 3, lineHeight: (fontSize + 3) * 1.5, padding: 0 }
+            { color: colors.text, fontSize: fontSize + 3, lineHeight: (fontSize + 3) * (Platform.OS === 'android' ? 1.8 : 1.5), padding: 0 }
           ]}
         />
       )}
@@ -49,6 +51,7 @@ export function VerseBlock({
           editable={false}
           multiline
           scrollEnabled={false}
+          underlineColorAndroid="transparent"
           style={[
             styles.translitText,
             { color: colors.textSecondary, fontSize: fontSize - 2, lineHeight: (fontSize - 2) * 1.4, padding: 0 }
@@ -73,8 +76,8 @@ export function VerseBlock({
 const styles = StyleSheet.create({
   verseBlock: { paddingBottom: 20, marginBottom: 20 },
   verseBlockBorder: { borderBottomWidth: 1 },
-  sanskritText: { fontFamily: 'System', marginBottom: 8 },
+  sanskritText: { fontFamily: FONTS.devanagari, marginBottom: 8 },
   translitText: { fontStyle: 'italic', marginBottom: 12 },
   translationBox: { padding: 12, borderRadius: 8, marginTop: 4 },
-  translationText: { fontFamily: 'Georgia' },
+  translationText: { fontFamily: FONTS.serif },
 });

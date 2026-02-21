@@ -63,11 +63,11 @@ describe('NavigationControls', () => {
     expect(getByText('✓ Already Read')).toBeTruthy();
   });
 
-  it('shows Come Back Tomorrow for next day', () => {
+  it('shows Mark Complete even after reading today (no daily gate)', () => {
     const { getByText } = render(
-      <NavigationControls {...baseProps} isNextDay={true} canMarkComplete={false} />
+      <NavigationControls {...baseProps} isNextDay={false} canMarkComplete={true} />
     );
-    expect(getByText('Come Back Tomorrow')).toBeTruthy();
+    expect(getByText('Mark Complete')).toBeTruthy();
   });
 
   it('disables Previous on first snippet', () => {

@@ -1,0 +1,32 @@
+appId: com.tenminutegita.app
+---
+- launchApp
+- waitForAnimationToEnd:
+    timeout: 15000
+- tapOn: ".*Begin Today.*Reading.*"
+- waitForAnimationToEnd
+- tapOn:
+    point: "96%,69%"
+- waitForAnimationToEnd
+- tapOn: ".*Mark Complete.*"
+- extendedWaitUntil:
+    visible:
+        id: "milestone-keep-going"
+    timeout: 10000
+- tapOn:
+    id: "milestone-keep-going"
+- waitForAnimationToEnd:
+    timeout: 10000
+- tapOn:
+    point: "50%,20%"
+- waitForAnimationToEnd
+- assertVisible: ".*read today.*"
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn: ".*Progress.*"
+- waitForAnimationToEnd
+- tapOn: ".*Settings.*"
+- waitForAnimationToEnd
+- tapOn: ".*Home.*"
+- waitForAnimationToEnd
+- assertVisible: ".*read today.*"

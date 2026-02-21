@@ -91,15 +91,19 @@ export function ShareCardModal({ visible, onClose, content }: ShareCardModalProp
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.gradientRow}>
             {CONFIG.SHARE_CARD.GRADIENTS.map((g, i) => (
               <Pressable key={i} onPress={() => setGradientIndex(i)}>
-                <LinearGradient
-                  colors={[...g.colors]}
-                  start={g.start}
-                  end={g.end}
-                  style={[
-                    styles.gradientThumb,
-                    i === gradientIndex && { borderColor: colors.accent, borderWidth: 3 },
-                  ]}
-                />
+                <View style={[
+                  styles.gradientThumbFrame,
+                  i === gradientIndex
+                    ? { borderColor: colors.accent }
+                    : { borderColor: 'transparent' },
+                ]}>
+                  <LinearGradient
+                    colors={[...g.colors]}
+                    start={g.start}
+                    end={g.end}
+                    style={styles.gradientThumb}
+                  />
+                </View>
               </Pressable>
             ))}
           </ScrollView>
@@ -184,10 +188,18 @@ const styles = StyleSheet.create({
     gap: 16,
     marginBottom: 24,
   },
+  gradientThumbFrame: {
+    width: 54,
+    height: 54,
+    borderRadius: 14,
+    borderWidth: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   gradientThumb: {
     width: 48,
     height: 48,
-    borderRadius: 12,
+    borderRadius: 11,
   },
   textSizeRow: {
     flexDirection: 'row',

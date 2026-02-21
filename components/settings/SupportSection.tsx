@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, Alert, Share, Linking, StyleSheet, Platform } from 'react-native';
 import Colors from '@/constants/Colors';
 import { CONFIG } from '@/constants/config';
+import { letterSpacingStyle } from '@/constants/fonts';
 import { logger } from '@/utils/logger';
 
 interface SupportSectionProps {
@@ -17,13 +18,14 @@ export function SupportSection({ colors, t, currentDay, onResetProgress }: Suppo
     // (Apple limits it to ~3 uses per year and silently fails after that)
     const storeUrl = Platform.select({
       ios: `itms-apps://itunes.apple.com/app/id${CONFIG.APP_STORE_ID}?action=write-review`,
+      android: `market://details?id=com.tenminutegita.app`,
       default: CONFIG.APP_STORE_URL,
     });
     try {
       await Linking.openURL(storeUrl);
     } catch {
       try {
-        await Linking.openURL(CONFIG.APP_STORE_URL);
+        await Linking.openURL(Platform.OS === 'android' ? CONFIG.PLAY_STORE_URL : CONFIG.APP_STORE_URL);
       } catch (error) {
         logger.error('settings.rateApp', error);
       }
@@ -119,7 +121,7 @@ export function SupportSection({ colors, t, currentDay, onResetProgress }: Suppo
           accessibilityLabel={t('settings.resetAllProgress')}
         >
           <Text style={styles.actionIcon} importantForAccessibility="no">🗑️</Text>
-          <Text style={[styles.actionLabel, { color: '#DC3545' }]}>{t('settings.resetAllProgress')}</Text>
+          <Text style={[styles.actionLabel, { color: '#D4756B' }]}>{t('settings.resetAllProgress')}</Text>
           <Text style={[styles.chevron, { color: colors.textSecondary }]}>›</Text>
         </Pressable>
       </View>
@@ -132,7 +134,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    ...letterSpacingStyle(1),
     marginBottom: 8,
     marginLeft: 20,
     marginTop: 8,

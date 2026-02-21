@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, Alert, StyleSheet } from 'react-native';
 import Colors from '@/constants/Colors';
+import { letterSpacingStyle } from '@/constants/fonts';
 
 interface DevToolsProps {
   colorScheme: 'light' | 'dark';
@@ -82,6 +83,7 @@ export function DevTools({
             keyboardType="number-pad"
             value={simulateDay}
             onChangeText={setSimulateDay}
+            underlineColorAndroid="transparent"
           />
           <Pressable
             style={({ pressed }) => [
@@ -118,7 +120,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    ...letterSpacingStyle(1),
     marginBottom: 8,
     marginLeft: 20,
     marginTop: 8,

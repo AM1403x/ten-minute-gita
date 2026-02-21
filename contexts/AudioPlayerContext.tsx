@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useReducer, useCallback, useRef, useEffect, useState } from 'react';
+import React, { createContext, useContext, useReducer, useCallback, useRef, useEffect, useState, useMemo, Component, type ErrorInfo, type ReactNode } from 'react';
 // Type-only imports — erased at compile time, no runtime module access
 import type { AudioPlayer } from 'expo-audio';
 import type { AudioStatus } from 'expo-audio';
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Snippet } from '@/types';
 import { AlignedData, AudioUIState, PlayerState, SavedAudioPosition } from '@/types/audio';
@@ -71,29 +72,29 @@ const noopAsync = async () => {};
 const noop = () => {};
 const noopLoadSavedPosition = async (): Promise<SavedAudioPosition | null> => null;
 
-function AudioPlayerFallback({ children }: { children: React.ReactNode }) {
-  const value: AudioPlayerContextType = {
-    player: null,
-    status: defaultStatus,
-    uiState: initialAudioUIState,
-    alignedData: null,
-    isAudioAvailable: false,
-    currentSnippetId: null,
-    loadAndPlay: noopAsync as any,
-    togglePlayPause: noop,
-    seek: noop,
-    skipForward: noop,
-    skipBack: noop,
-    setSpeed: noop,
-    expandPlayer: noop,
-    minimizePlayer: noop,
-    dismissPlayer: noop,
-    toggleSpeedPanel: noop,
-    loadSavedPosition: noopLoadSavedPosition,
-  };
+const fallbackValue: AudioPlayerContextType = {
+  player: null,
+  status: defaultStatus,
+  uiState: initialAudioUIState,
+  alignedData: null,
+  isAudioAvailable: false,
+  currentSnippetId: null,
+  loadAndPlay: noopAsync as any,
+  togglePlayPause: noop,
+  seek: noop,
+  skipForward: noop,
+  skipBack: noop,
+  setSpeed: noop,
+  expandPlayer: noop,
+  minimizePlayer: noop,
+  dismissPlayer: noop,
+  toggleSpeedPanel: noop,
+  loadSavedPosition: noopLoadSavedPosition,
+};
 
+function AudioPlayerFallback({ children }: { children: React.ReactNode }) {
   return (
-    <AudioPlayerContext value={value}>
+    <AudioPlayerContext value={fallbackValue}>
       {children}
     </AudioPlayerContext>
   );
@@ -114,6 +115,14 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
   const statusPlayingRef = useRef(false);
   const statusCurrentTimeRef = useRef(0);
   const wantsToPlayRef = useRef(false);
+  // Set when didJustFinish fires — prevents dismissPlayer from overwriting the
+  // completion handler's { time: 0 } save with the end-of-track position.
+  const justCompletedRef = useRef(false);
+  // Generation counter: each player.replace() call increments this. The ready
+  // poll checks it so that only the latest replace()'s pending action is consumed.
+  const loadGenerationRef = useRef(0);
+  // Handle for the polling interval that waits for new audio to be ready.
+  const readyPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const { language } = useLanguage();
 
   // Native module guard: the JS module may load but native calls can still throw
@@ -129,6 +138,10 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
     wantsToPlayRef.current = false;
     pendingActionRef.current = null;
     pendingSpeedRef.current = null;
+    if (readyPollRef.current) {
+      clearInterval(readyPollRef.current);
+      readyPollRef.current = null;
+    }
     if (loadTimeoutRef.current) {
       clearTimeout(loadTimeoutRef.current);
       loadTimeoutRef.current = null;
@@ -144,9 +157,11 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
   const uiSnippetIdRef = useRef(uiState.snippetId);
   const uiHasListenedRef = useRef(uiState.hasListened);
   const uiSpeedRef = useRef(uiState.speed);
+  const uiPlayerStateRef = useRef(uiState.playerState);
   uiSnippetIdRef.current = uiState.snippetId;
   uiHasListenedRef.current = uiState.hasListened;
   uiSpeedRef.current = uiState.speed;
+  uiPlayerStateRef.current = uiState.playerState;
 
   // In-memory position cache — eliminates async race between save (on dismiss) and load (on return)
   const positionCacheRef = useRef<Map<number, SavedAudioPosition>>(new Map());
@@ -175,16 +190,16 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
         positionCacheRef.current.set(sid, saved);
         const key = `${CONFIG.VOICE_MODE.POSITION_SAVE_KEY_PREFIX}${sid}`;
         AsyncStorage.setItem(key, JSON.stringify(saved)).catch(() => {});
-        console.log('[AUDIO_DEBUG] autoSave: time=', time.toFixed(1), 'snippetId=', sid);
+        logger.warn('AudioPlayer', `autoSave: time=${time.toFixed(1)} snippetId=${sid}`);
       } catch (e) {
-        console.log('[AUDIO_DEBUG] autoSave: FAILED', e);
+        logger.warn('AudioPlayer', `autoSave: FAILED ${e}`);
       }
     }, 1000);
 
     return () => clearInterval(interval);
   }, [player, uiState.playerState, status.playing]);
 
-  // Configure audio mode on mount
+  // Configure audio mode on mount and enable pitch correction
   useEffect(() => {
     _setAudioModeAsync!({
       playsInSilentMode: true,
@@ -193,92 +208,123 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
     }).catch(() => {
       logger.warn('AudioPlayer', 'Failed to set audio mode');
     });
-  }, []);
+    // Enable pitch correction so speed changes don't shift voice pitch
+    try {
+      player.shouldCorrectPitch = true;
+    } catch {
+      // Not critical — pitch may shift at non-1x speeds
+    }
+  }, [player]);
 
-  // Execute pending action when audio finishes loading.
-  // Guard: skip if player was dismissed while audio was loading.
-  useEffect(() => {
-    if (nativeDisabledRef.current) return;
-
-    // Clear load timeout — audio has loaded (or we'll handle it)
-    if (status.isLoaded && loadTimeoutRef.current) {
-      clearTimeout(loadTimeoutRef.current);
-      loadTimeoutRef.current = null;
+  // Poll player's native properties directly after replace() until new audio
+  // is ready.  Unlike React's status.isLoaded (which may skip the false→true
+  // cycle on iOS — the KVO publisher only emits isLoaded:true when
+  // AVPlayerItem.status == .readyToPlay), player.isLoaded accesses the native
+  // getter which reliably returns false for a newly-created AVPlayerItem until
+  // it finishes loading.  A generation counter ensures rapid replace() calls
+  // cancel previous polls — only the latest generation's action is consumed.
+  const startReadyPoll = useCallback((generation: number) => {
+    if (readyPollRef.current) {
+      clearInterval(readyPollRef.current);
+      readyPollRef.current = null;
     }
 
-    if (status.isLoaded && pendingActionRef.current) {
-      // Don't start playback if the user already dismissed the player.
-      // Keep the pending action so it can fire if playerState changes.
-      if (uiState.playerState === 'off') return;
+    readyPollRef.current = setInterval(() => {
+      // Superseded by a newer replace() call
+      if (loadGenerationRef.current !== generation) {
+        clearInterval(readyPollRef.current!);
+        readyPollRef.current = null;
+        return;
+      }
+      // User dismissed while loading
+      if (uiPlayerStateRef.current === 'off') {
+        clearInterval(readyPollRef.current!);
+        readyPollRef.current = null;
+        return;
+      }
 
-      const action = pendingActionRef.current;
-      pendingActionRef.current = null;
-      console.log('[AUDIO_DEBUG] pendingAction executing:', JSON.stringify(action), 'playerState=', uiState.playerState, 'player.currentTime=', (() => { try { return player.currentTime; } catch { return 'N/A'; } })());
-
-      (async () => {
-        try {
-          if (action.seekTo != null) {
-            const target = Math.max(0, action.seekTo);
-            let seekApplied = false;
-
-            // expo-audio can report "loaded" before seek is actually honored.
-            // Retry a few times and verify currentTime moved to target.
-            for (let attempt = 1; attempt <= 6; attempt++) {
-              try {
-                await player.seekTo(target);
-              } catch {
-                // Transient seek failure; retry before escalating.
-              }
-
-              await new Promise((resolve) => setTimeout(resolve, 80));
-
-              let current = 0;
-              try {
-                current = player.currentTime;
-              } catch {
-                current = 0;
-              }
-
-              const withinTolerance = target === 0
-                ? current < 0.35
-                : Math.abs(current - target) < 0.5;
-
-              if (withinTolerance) {
-                seekApplied = true;
-                console.log('[AUDIO_DEBUG] pendingAction: seek applied on attempt', attempt, 'target=', target, 'current=', current);
-                break;
-              }
-
-              if (attempt === 6) {
-                console.log('[AUDIO_DEBUG] pendingAction: seek did not stick after retries. target=', target, 'current=', current);
-              }
-            }
-
-            // If seek never sticks, still continue to play to avoid getting stuck.
-            if (!seekApplied) {
-              // no-op
-            }
-          }
-          if (action.play) {
-            player.play();
-          }
-        } catch {
-          disableNativeAudio();
-        }
-      })();
-    }
-
-    // Apply deferred speed when audio finishes loading
-    if (status.isLoaded && pendingSpeedRef.current != null) {
-      const rate = pendingSpeedRef.current;
-      pendingSpeedRef.current = null;
       try {
-        player.setPlaybackRate(rate);
+        // Direct native access — not React status (which may lag or skip states)
+        const loaded = player.isLoaded;
+        const dur = player.duration;
+        const time = player.currentTime;
+
+        // Ready when: loaded + valid duration + time near start.
+        // The time<1.0 guard is defense-in-depth: if the native bridge is async
+        // and old state briefly leaks through, this prevents consuming the action
+        // on old audio that was playing at a position > 1s.  For old audio at <1s,
+        // it fires immediately — harmless because seek-to-0 on audio already near
+        // 0 is a no-op.
+        if (loaded && dur > 0 && time < 1.0) {
+          clearInterval(readyPollRef.current!);
+          readyPollRef.current = null;
+
+          // Clear load timeout
+          if (loadTimeoutRef.current) {
+            clearTimeout(loadTimeoutRef.current);
+            loadTimeoutRef.current = null;
+          }
+
+          const action = pendingActionRef.current;
+          pendingActionRef.current = null;
+          // Stop the retry mechanism — this poll handles play() after seek.
+          wantsToPlayRef.current = false;
+
+          if (action) {
+            logger.warn('AudioPlayer', `readyPoll: consuming action gen=${generation} ${JSON.stringify(action)}`);
+
+            (async () => {
+              try {
+                if (action.seekTo != null) {
+                  const target = Math.max(0, action.seekTo);
+                  for (let attempt = 1; attempt <= 6; attempt++) {
+                    try { await player.seekTo(target); } catch { /* transient */ }
+                    await new Promise(r => setTimeout(r, 80));
+                    let current = 0;
+                    try { current = player.currentTime; } catch { current = 0; }
+                    const ok = target === 0
+                      ? current < 0.35
+                      : Math.abs(current - target) < 0.5;
+                    if (ok) {
+                      logger.warn('AudioPlayer', `readyPoll: seek applied attempt=${attempt} target=${target} current=${current}`);
+                      break;
+                    }
+                    if (attempt === 6) {
+                      logger.warn('AudioPlayer', `readyPoll: seek did not stick target=${target} current=${current}`);
+                    }
+                  }
+                }
+                if (action.play) {
+                  // Brief pause before fresh starts so the user can visually
+                  // orient on the shloka text before narration begins.
+                  if (!action.seekTo) {
+                    await new Promise(r => setTimeout(r, 500));
+                  }
+                  player.play();
+                }
+              } catch {
+                disableNativeAudio();
+              }
+            })();
+          }
+
+          // Apply deferred speed
+          if (pendingSpeedRef.current != null) {
+            const rate = pendingSpeedRef.current;
+            pendingSpeedRef.current = null;
+            try {
+              player.shouldCorrectPitch = true;
+              player.setPlaybackRate(rate);
+            } catch { disableNativeAudio(); }
+          }
+        }
       } catch {
+        clearInterval(readyPollRef.current!);
+        readyPollRef.current = null;
         disableNativeAudio();
       }
-    }
-  }, [status.isLoaded, player, uiState.playerState, disableNativeAudio]);
+    }, 50);
+  }, [player, disableNativeAudio]);
 
   // Retry mechanism: poll direct player properties and retry play()
   useEffect(() => {
@@ -303,6 +349,13 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
         if (player.playing) {
           wantsToPlayRef.current = false;
           clearInterval(interval);
+          return;
+        }
+
+        // Don't attempt playback while a pending seek/play action is waiting
+        // for the new source to be ready. This prevents starting on stale audio
+        // in the iOS worst-case (isLoaded stays true across replace()).
+        if (pendingActionRef.current) {
           return;
         }
 
@@ -333,8 +386,9 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
     // Guard: only mark listened if audio actually played (duration > 0 and
     // position advanced). A failed load can trigger didJustFinish with zeros.
     if (justFinished && uiState.playerState !== 'off' && status.duration > 0) {
-      console.log('[AUDIO_DEBUG] didJustFinish: marking listened, snippetId=', uiState.snippetId, 'playerState=', uiState.playerState, 'duration=', status.duration);
+      logger.warn('AudioPlayer', `didJustFinish: marking listened, snippetId=${uiState.snippetId} playerState=${uiState.playerState} duration=${status.duration}`);
       wantsToPlayRef.current = false;
+      justCompletedRef.current = true;
       dispatch({ type: 'MARK_LISTENED' });
       if (uiState.snippetId != null) {
         const saved: SavedAudioPosition = {
@@ -365,12 +419,36 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
 
     currentLanguageRef.current = language;
 
-    (async () => {
-      try {
-        const aligned = await audioSource.getAlignedData(snippet, language);
-        setAlignedData(aligned);
+    // Clear any previous load timeout
+    if (loadTimeoutRef.current) {
+      clearTimeout(loadTimeoutRef.current);
+      loadTimeoutRef.current = null;
+    }
 
-        const { uri } = await resolveAudioSource(snippet, language);
+    (async () => {
+      // Phase 1: Data loading — errors should NOT kill native audio
+      let aligned: AlignedData;
+      let uri: string;
+
+      try {
+        aligned = await audioSource.getAlignedData(snippet, language);
+      } catch (e) {
+        logger.warn('AudioPlayer', `language switch: aligned data load failed: ${e}`);
+        return;
+      }
+
+      setAlignedData(aligned);
+
+      try {
+        const source = await resolveAudioSource(snippet, language);
+        uri = source.uri;
+      } catch (e) {
+        logger.warn('AudioPlayer', `language switch: audio source resolve failed: ${e}`);
+        return;
+      }
+
+      // Phase 2: Native player calls — errors indicate broken native module
+      try {
         currentUriRef.current = uri;
 
         pendingActionRef.current = {
@@ -380,7 +458,25 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
         if (wasPlaying) {
           wantsToPlayRef.current = true;
         }
+        const generation = ++loadGenerationRef.current;
         player.replace({ uri });
+
+        if (Platform.OS === 'android') {
+          try { player.play(); } catch { /* will be caught by ready poll */ }
+        }
+
+        startReadyPoll(generation);
+
+        // Load timeout for language switch — dismiss if audio never loads
+        loadTimeoutRef.current = setTimeout(() => {
+          loadTimeoutRef.current = null;
+          if (pendingActionRef.current) {
+            pendingActionRef.current = null;
+            wantsToPlayRef.current = false;
+            logger.warn('AudioPlayer', 'Language-switch audio load timed out after 30s');
+            dispatch({ type: 'DISMISS_PLAYER' });
+          }
+        }, 30000);
 
         try {
           player.setActiveForLockScreen(true, {
@@ -397,7 +493,7 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
         disableNativeAudio();
       }
     })();
-  }, [language, player, uiState.playerState, disableNativeAudio]);
+  }, [language, player, uiState.playerState, startReadyPoll, disableNativeAudio]);
 
   // Final flush on dismiss/pause — reads player.currentTime directly.
   // If it can't get a positive time, skips the save entirely
@@ -422,7 +518,7 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
     }
     // Never overwrite a good auto-saved position with 0.
     if (time <= 0) {
-      console.log('[AUDIO_DEBUG] savePosition: skipping — time is 0, auto-save has good data');
+      logger.warn('AudioPlayer', 'savePosition: skipping — time is 0, auto-save has good data');
       return;
     }
 
@@ -432,7 +528,7 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
       hasListened: uiHasListenedRef.current,
       speed: uiSpeedRef.current,
     };
-    console.log('[AUDIO_DEBUG] savePosition:', JSON.stringify(saved));
+    logger.warn('AudioPlayer', `savePosition: ${JSON.stringify(saved)}`);
     positionCacheRef.current.set(sid, saved);
     const key = `${CONFIG.VOICE_MODE.POSITION_SAVE_KEY_PREFIX}${sid}`;
     AsyncStorage.setItem(key, JSON.stringify(saved)).catch(() => {});
@@ -442,7 +538,7 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
     // Check in-memory cache first — handles race where dismiss save hasn't flushed to AsyncStorage yet
     const cached = positionCacheRef.current.get(snippetId);
     if (cached) {
-      console.log('[AUDIO_DEBUG] loadSavedPosition: snippetId=', snippetId, 'CACHE HIT', JSON.stringify(cached));
+      logger.warn('AudioPlayer', `loadSavedPosition: snippetId=${snippetId} CACHE HIT ${JSON.stringify(cached)}`);
       return cached;
     }
 
@@ -451,32 +547,59 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
       const data = await AsyncStorage.getItem(key);
       if (data) {
         const parsed = JSON.parse(data) as SavedAudioPosition;
-        console.log('[AUDIO_DEBUG] loadSavedPosition: snippetId=', snippetId, 'ASYNC_STORAGE', JSON.stringify(parsed));
+        logger.warn('AudioPlayer', `loadSavedPosition: snippetId=${snippetId} ASYNC_STORAGE ${JSON.stringify(parsed)}`);
         return parsed;
       }
     } catch {
       // Storage read not critical
     }
-    console.log('[AUDIO_DEBUG] loadSavedPosition: snippetId=', snippetId, 'NOT FOUND');
+    logger.warn('AudioPlayer', `loadSavedPosition: snippetId=${snippetId} NOT FOUND`);
     return null;
   }, []);
 
   const loadAndPlay = useCallback(async (snippet: Snippet, language: 'en' | 'hi') => {
     if (nativeDisabledRef.current) return;
+
+    // Phase 1: Data loading — network/file errors should NOT kill native audio
+    let aligned: AlignedData;
+    let saved: SavedAudioPosition | null = null;
+    let uri: string;
+
     try {
-      const aligned = await audioSource.getAlignedData(snippet, language);
-      setAlignedData(aligned);
-      currentSnippetRef.current = snippet;
-      currentLanguageRef.current = language;
+      aligned = await audioSource.getAlignedData(snippet, language);
+    } catch (e) {
+      logger.warn('AudioPlayer', `loadAndPlay: aligned data load failed: ${e}`);
+      return;
+    }
 
-      const saved = await loadSavedPosition(snippet.id);
+    setAlignedData(aligned);
+    currentSnippetRef.current = snippet;
+    currentLanguageRef.current = language;
+    justCompletedRef.current = false;
 
-      const { uri } = await resolveAudioSource(snippet, language);
-      const rawSavedTime = saved?.time;
-      const normalizedSavedTime = typeof rawSavedTime === 'number' ? rawSavedTime : Number(rawSavedTime);
-      const resumeTime = Number.isFinite(normalizedSavedTime) && normalizedSavedTime > 0 ? normalizedSavedTime : 0;
-      console.log('[AUDIO_DEBUG] loadAndPlay: resumeTime=', resumeTime, 'saved=', JSON.stringify(saved), 'uri=', uri);
+    saved = await loadSavedPosition(snippet.id);
 
+    try {
+      const source = await resolveAudioSource(snippet, language);
+      uri = source.uri;
+    } catch (e) {
+      logger.warn('AudioPlayer', `loadAndPlay: audio source resolve failed: ${e}`);
+      return;
+    }
+
+    const rawSavedTime = saved?.time;
+    const normalizedSavedTime = typeof rawSavedTime === 'number' ? rawSavedTime : Number(rawSavedTime);
+    let resumeTime = Number.isFinite(normalizedSavedTime) && normalizedSavedTime > 0 ? normalizedSavedTime : 0;
+    // Defense-in-depth: if saved position is near the end of the track
+    // (e.g. stale save from dismiss-after-completion), start from beginning.
+    if (resumeTime > 0 && aligned && resumeTime > aligned.duration_seconds - 3) {
+      logger.warn('AudioPlayer', `loadAndPlay: clamping near-end resume ${resumeTime.toFixed(1)}s to 0 (duration=${aligned.duration_seconds.toFixed(1)}s)`);
+      resumeTime = 0;
+    }
+    logger.warn('AudioPlayer', `loadAndPlay: resumeTime=${resumeTime} saved=${JSON.stringify(saved)} uri=${uri}`);
+
+    // Phase 2: Native player calls — errors here indicate broken native module
+    try {
       // Always reload via player.replace() — seeking on a stale/paused player
       // is unreliable in expo-audio. A fresh load + pending action ensures the
       // seek executes on a newly-loaded player where it reliably takes effect.
@@ -492,18 +615,32 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
         clearTimeout(loadTimeoutRef.current);
       }
 
+      // Start generation-gated poll: increments the generation counter so any
+      // previous poll stops, then polls player's native properties directly
+      // until the new audio is confirmed loaded.
+      const generation = ++loadGenerationRef.current;
       player.replace({ uri });
 
-      // Load timeout: if audio doesn't load within 10s, reset player state
+      // On Android, ExoPlayer may not start buffering until play() is called.
+      // Calling play() sets playWhenReady=true so it auto-plays once buffered.
+      // The ready poll will still handle seeking before audio actually starts.
+      if (Platform.OS === 'android') {
+        try { player.play(); } catch { /* will be caught by ready poll */ }
+      }
+
+      startReadyPoll(generation);
+
+      // Load timeout: if audio doesn't load within 30s, reset player state.
+      // CDN audio on Android emulators can be slow to buffer.
       loadTimeoutRef.current = setTimeout(() => {
         loadTimeoutRef.current = null;
         if (pendingActionRef.current) {
           pendingActionRef.current = null;
           wantsToPlayRef.current = false;
-          logger.warn('AudioPlayer', 'Audio load timed out after 10s');
+          logger.warn('AudioPlayer', 'Audio load timed out after 30s');
           dispatch({ type: 'DISMISS_PLAYER' });
         }
-      }, 10000);
+      }, 30000);
 
       if (saved?.speed && saved.speed !== 1.0) {
         dispatch({ type: 'SET_SPEED', payload: saved.speed });
@@ -511,18 +648,21 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
         pendingSpeedRef.current = saved.speed;
       }
 
+      // LOAD_SNIPPET must fire BEFORE RESTORE_POSITION — LOAD_SNIPPET resets
+      // hasListened to false, so dispatching it after RESTORE_POSITION would
+      // clobber the restored hasListened=true for previously-completed audio.
+      dispatch({ type: 'LOAD_SNIPPET', payload: snippet.id });
+
       if (saved) {
         dispatch({
           type: 'RESTORE_POSITION',
           payload: {
             savedTime: saved.time,
             hasListened: saved.hasListened,
-            speed: saved.speed,
+            speed: saved.speed ?? 1.0,
           },
         });
       }
-
-      dispatch({ type: 'LOAD_SNIPPET', payload: snippet.id });
 
       try {
         player.setActiveForLockScreen(true, {
@@ -538,12 +678,19 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
     } catch {
       disableNativeAudio();
     }
-  }, [player, loadSavedPosition, disableNativeAudio]);
+  }, [player, loadSavedPosition, startReadyPoll, disableNativeAudio]);
+
+  // Use refs for status values in callbacks to avoid recreating them on every
+  // audio tick. Without this, skipForward/skipBack/seek/togglePlayPause change
+  // identity ~10x/sec, causing the entire context value to change and all
+  // consumers to re-render during playback.
+  const statusDurationRef = useRef(status.duration);
+  statusDurationRef.current = status.duration;
 
   const togglePlayPause = useCallback(() => {
     if (nativeDisabledRef.current) return;
     try {
-      if (status.playing || player.playing) {
+      if (statusPlayingRef.current || player.playing) {
         wantsToPlayRef.current = false;
         player.pause();
         savePosition();
@@ -554,31 +701,32 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
     } catch {
       disableNativeAudio();
     }
-  }, [player, status.playing, savePosition, disableNativeAudio]);
+  }, [player, savePosition, disableNativeAudio]);
 
   const seek = useCallback((time: number) => {
     if (nativeDisabledRef.current) return;
     try {
-      const clampedTime = Math.max(0, Math.min(time, status.duration || 0));
+      const clampedTime = Math.max(0, Math.min(time, statusDurationRef.current || 0));
       player.seekTo(clampedTime);
     } catch {
       disableNativeAudio();
     }
-  }, [player, status.duration, disableNativeAudio]);
+  }, [player, disableNativeAudio]);
 
   const skipForward = useCallback(() => {
-    seek(status.currentTime + CONFIG.VOICE_MODE.SKIP_SECONDS * uiState.speed);
-  }, [seek, status.currentTime, uiState.speed]);
+    seek(statusCurrentTimeRef.current + CONFIG.VOICE_MODE.SKIP_SECONDS * uiSpeedRef.current);
+  }, [seek]);
 
   const skipBack = useCallback(() => {
-    seek(status.currentTime - CONFIG.VOICE_MODE.SKIP_SECONDS * uiState.speed);
-  }, [seek, status.currentTime, uiState.speed]);
+    seek(statusCurrentTimeRef.current - CONFIG.VOICE_MODE.SKIP_SECONDS * uiSpeedRef.current);
+  }, [seek]);
 
   const setSpeed = useCallback((rate: number) => {
     if (nativeDisabledRef.current) return;
     dispatch({ type: 'SET_SPEED', payload: rate });
     try {
       if (player.isLoaded) {
+        player.shouldCorrectPitch = true;
         player.setPlaybackRate(rate);
       } else {
         // Defer until audio is loaded
@@ -601,6 +749,10 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
     wantsToPlayRef.current = false;
     pendingActionRef.current = null;
     pendingSpeedRef.current = null;
+    if (readyPollRef.current) {
+      clearInterval(readyPollRef.current);
+      readyPollRef.current = null;
+    }
     if (loadTimeoutRef.current) {
       clearTimeout(loadTimeoutRef.current);
       loadTimeoutRef.current = null;
@@ -608,8 +760,15 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
     // Save position BEFORE pausing — player.currentTime is most reliable
     // while the player is still in an active (playing/paused) state.
     // After pause(), some native implementations reset currentTime to 0.
-    console.log('[AUDIO_DEBUG] dismissPlayer: about to save. statusRef=', statusCurrentTimeRef.current, 'player.currentTime=', (() => { try { return player.currentTime; } catch { return 'N/A'; } })(), 'snippetId=', uiSnippetIdRef.current, 'hasListened=', uiHasListenedRef.current);
-    savePosition();
+    // Skip save if audio just completed — the completion handler already saved
+    // { time: 0 } and we don't want to overwrite it with end-of-track position.
+    if (justCompletedRef.current) {
+      logger.warn('AudioPlayer', 'dismissPlayer: skipping save — audio just completed');
+    } else {
+      logger.warn('AudioPlayer', `dismissPlayer: about to save. statusRef=${statusCurrentTimeRef.current} snippetId=${uiSnippetIdRef.current} hasListened=${uiHasListenedRef.current}`);
+      savePosition();
+    }
+    justCompletedRef.current = false;
     if (!nativeDisabledRef.current) {
       try {
         player.pause();
@@ -625,7 +784,7 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
     dispatch({ type: 'TOGGLE_SPEED_PANEL' });
   }, []);
 
-  const value: AudioPlayerContextType = {
+  const value = useMemo<AudioPlayerContextType>(() => ({
     player,
     status,
     uiState,
@@ -643,7 +802,7 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
     dismissPlayer,
     toggleSpeedPanel,
     loadSavedPosition,
-  };
+  }), [player, status, uiState, alignedData, audioAvailable, loadAndPlay, togglePlayPause, seek, skipForward, skipBack, setSpeed, expandPlayer, minimizePlayer, dismissPlayer, toggleSpeedPanel, loadSavedPosition]);
 
   return (
     <AudioPlayerContext value={value}>
@@ -652,11 +811,45 @@ function AudioPlayerProviderActive({ children }: { children: React.ReactNode }) 
   );
 }
 
+/**
+ * Error boundary that wraps AudioPlayerProviderActive.
+ * If expo-audio's hooks crash during render (e.g. native module error),
+ * this catches the error and gracefully falls back to the no-audio provider
+ * instead of crashing the entire app.
+ */
+class AudioProviderErrorBoundary extends Component<
+  { children: ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError(): { hasError: boolean } {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    logger.error('AudioProvider', error);
+    // Mark expo-audio as unavailable so we don't retry
+    expoAudioAvailable = false;
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <AudioPlayerFallback>{this.props.children}</AudioPlayerFallback>;
+    }
+    return this.props.children;
+  }
+}
+
 export function AudioPlayerProvider({ children }: { children: React.ReactNode }) {
   if (!expoAudioAvailable) {
     return <AudioPlayerFallback>{children}</AudioPlayerFallback>;
   }
-  return <AudioPlayerProviderActive>{children}</AudioPlayerProviderActive>;
+  return (
+    <AudioProviderErrorBoundary>
+      <AudioPlayerProviderActive>{children}</AudioPlayerProviderActive>
+    </AudioProviderErrorBoundary>
+  );
 }
 
 export function useAudioPlayerContext(): AudioPlayerContextType {

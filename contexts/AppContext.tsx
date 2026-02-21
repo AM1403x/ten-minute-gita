@@ -1,10 +1,12 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useCallback, useMemo, ReactNode } from 'react';
 import { Settings } from '@/types';
 import {
   loadProgress,
   saveProgress,
   resetProgress,
 } from '@/utils/storage';
+import { cleanupOldDownloads } from '@/utils/downloadStorage';
+import { clearAuthGateState } from '@/utils/authGateStorage';
 import { appReducer, initialState } from '@/reducers/appReducer';
 import { trackEvent } from '@/utils/sentry';
 
@@ -29,6 +31,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const progress = await loadProgress();
       dispatch({ type: 'SET_PROGRESS', payload: progress });
       dispatch({ type: 'SYNC_STREAK' });
+
+      // Auto-remove old downloads in background (fire-and-forget)
+      cleanupOldDownloads(progress.readingHistory, progress.completedSnippets, 'en').catch(() => {});
+      cleanupOldDownloads(progress.readingHistory, progress.completedSnippets, 'hi').catch(() => {});
     };
     load();
   }, []);
@@ -40,42 +46,44 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [state.progress, state.isLoading]);
 
-  const markComplete = (snippetId: number) => {
+  const markComplete = useCallback((snippetId: number) => {
     dispatch({ type: 'MARK_COMPLETE', payload: snippetId });
-    trackEvent('reading_complete', { day: snippetId, totalCompleted: state.progress.completedSnippets.length + 1 });
-  };
+    trackEvent('reading_complete', { day: snippetId });
+  }, []);
 
-  const updateSettings = (settings: Partial<Settings>) => {
+  const updateSettings = useCallback((settings: Partial<Settings>) => {
     dispatch({ type: 'UPDATE_SETTINGS', payload: settings });
-  };
+  }, []);
 
-  const useStreakFreeze = () => {
+  const useStreakFreeze = useCallback(() => {
     dispatch({ type: 'USE_STREAK_FREEZE' });
-  };
+  }, []);
 
-  const resetAllProgress = async () => {
+  const resetAllProgress = useCallback(async () => {
     await resetProgress();
+    await clearAuthGateState();
     dispatch({ type: 'RESET_PROGRESS' });
-  };
+  }, []);
 
-  const simulateProgress = (day: number) => {
+  const simulateProgress = useCallback((day: number) => {
+    clearAuthGateState().catch(() => {});
     dispatch({ type: 'SIMULATE_PROGRESS', payload: day });
-  };
+  }, []);
+
+  const value = useMemo(() => ({
+    state,
+    dispatch,
+    markComplete,
+    updateSettings,
+    useStreakFreeze,
+    resetAllProgress,
+    simulateProgress,
+  }), [state, markComplete, updateSettings, useStreakFreeze, resetAllProgress, simulateProgress]);
 
   return (
-    <AppContext.Provider
-      value={{
-        state,
-        dispatch,
-        markComplete,
-        updateSettings,
-        useStreakFreeze,
-        resetAllProgress,
-        simulateProgress,
-      }}
-    >
+    <AppContext value={value}>
       {children}
-    </AppContext.Provider>
+    </AppContext>
   );
 }
 

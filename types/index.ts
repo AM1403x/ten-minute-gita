@@ -30,7 +30,7 @@ export interface Settings {
 }
 
 export interface ReadingHistory {
-  [date: string]: number; // date -> snippet id read that day
+  [date: string]: number[]; // date -> snippet ids completed that day (in order)
 }
 
 export interface UserProgress {
@@ -39,6 +39,7 @@ export interface UserProgress {
   streak: StreakData;
   settings: Settings;
   readingHistory: ReadingHistory;
+  readingHistoryVersion?: number;
 }
 
 export interface AppState {

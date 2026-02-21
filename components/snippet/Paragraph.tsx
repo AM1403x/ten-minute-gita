@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { FormattedText } from './FormattedText';
+import { FONTS } from '@/constants/fonts';
 
 interface ParagraphProps {
   text: string;
@@ -33,6 +34,6 @@ export function Paragraph({ text, fontSize, color, italicColor, accentColor, hig
 }
 
 const styles = StyleSheet.create({
-  paragraph: { fontFamily: 'Georgia' },
+  paragraph: { fontFamily: FONTS.serif },
   quote: { fontStyle: 'italic', paddingLeft: 16, borderLeftWidth: 3 },
 });

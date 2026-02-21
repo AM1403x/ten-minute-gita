@@ -5,20 +5,26 @@ import { Snippet } from '@/types';
 import Colors from '@/constants/Colors';
 import { useAppColorScheme } from '@/hooks/useAppColorScheme';
 import { useLanguage, hiFontSize } from '@/contexts/LanguageContext';
+import { FONTS, letterSpacingStyle } from '@/constants/fonts';
 
 interface TodayCardProps {
   snippet: Snippet;
   isCompleted: boolean;
   nextSnippet?: Snippet;
+  onBeginReading?: () => void;
 }
 
-export function TodayCard({ snippet, isCompleted, nextSnippet }: TodayCardProps) {
+export function TodayCard({ snippet, isCompleted, nextSnippet, onBeginReading }: TodayCardProps) {
   const router = useRouter();
   const colorScheme = useAppColorScheme();
   const colors = Colors[colorScheme];
   const { t, language } = useLanguage();
 
   const handleBeginReading = () => {
+    if (onBeginReading) {
+      onBeginReading();
+      return;
+    }
     router.push(`/reading/${snippet.id}`);
   };
 
@@ -124,6 +130,7 @@ export function TodayCard({ snippet, isCompleted, nextSnippet }: TodayCardProps)
         onPress={handleBeginReading}
         accessibilityLabel={t('todayCard.beginReading')}
         accessibilityRole="button"
+        testID="begin-reading"
       >
         <Text style={[styles.ctaText, { fontSize: hiFontSize(18, language) }]}>
           {t('todayCard.beginReading')}
@@ -152,7 +159,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     textTransform: 'uppercase',
-    letterSpacing: 1.5,
+    ...letterSpacingStyle(1.5),
     marginBottom: 12,
   },
   title: {
@@ -160,7 +167,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     lineHeight: 32,
     marginBottom: 12,
-    fontFamily: 'Georgia',
+    fontFamily: FONTS.serif,
   },
   sanskritPreview: {
     fontSize: 14,
@@ -224,7 +231,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     textTransform: 'uppercase',
-    letterSpacing: 2,
+    ...letterSpacingStyle(2),
     marginBottom: 12,
   },
   upNextChapter: {
@@ -234,7 +241,7 @@ const styles = StyleSheet.create({
   upNextTitle: {
     fontSize: 20,
     fontWeight: '700',
-    fontFamily: 'Georgia',
+    fontFamily: FONTS.serif,
     marginBottom: 20,
     lineHeight: 28,
   },

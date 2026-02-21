@@ -11,6 +11,7 @@ interface DayData {
   date: string;
   snippetId: number | null;
   hasReading: boolean;
+  readingCount: number;
   isToday: boolean;
   isPast: boolean;
 }
@@ -46,8 +47,10 @@ export function CalendarHeatmap() {
         const dateStr = getDateString(currentDate);
         const isToday = dateStr === todayStr;
         const isPast = currentDate <= today;
-        const snippetId = readingHistory[dateStr] ?? null;
-        const hasReading = snippetId !== null && isPast;
+        const readings = readingHistory[dateStr] ?? [];
+        const snippetId = readings.length > 0 ? readings[readings.length - 1] : null;
+        const hasReading = readings.length > 0 && isPast;
+        const readingCount = readings.length;
 
         if (hasReading) {
           readCount++;
@@ -57,6 +60,7 @@ export function CalendarHeatmap() {
           date: dateStr,
           snippetId,
           hasReading,
+          readingCount,
           isToday,
           isPast,
         });
@@ -80,7 +84,7 @@ export function CalendarHeatmap() {
       <View style={styles.header}>
         <Text style={[styles.title, { color: colors.text }]}>{t('calendar.readingHistory')}</Text>
         <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-          {t('calendar.daysTotal', { count: readDaysCount })}
+          {t('calendar.daysTotal', { count: readDaysCount, dayWord: readDaysCount === 1 ? 'day' : 'days' })}
         </Text>
       </View>
 
@@ -106,7 +110,11 @@ export function CalendarHeatmap() {
                   backgroundColor: !day.isPast
                     ? 'transparent'
                     : day.hasReading
-                    ? colors.accent
+                    ? day.readingCount >= 3
+                      ? colorScheme === 'dark' ? '#F0917E' : '#C4503A'
+                      : day.readingCount >= 2
+                      ? colorScheme === 'dark' ? '#E8937F' : '#D4644E'
+                      : colors.accent
                     : colorScheme === 'dark'
                     ? '#404040'
                     : '#E8E8E8',

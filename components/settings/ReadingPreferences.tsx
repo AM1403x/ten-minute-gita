@@ -3,6 +3,7 @@ import { View, Text, Switch, Platform, StyleSheet, Alert } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Settings } from '@/types';
 import Colors from '@/constants/Colors';
+import { FONTS, letterSpacingStyle } from '@/constants/fonts';
 
 interface ReadingPreferencesProps {
   settings: Settings;
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    ...letterSpacingStyle(1),
     marginBottom: 8,
     marginLeft: 20,
     marginTop: 8,
@@ -143,5 +144,5 @@ const styles = StyleSheet.create({
   previewContainer: { padding: 16, borderRadius: 12, marginTop: 8, gap: 6 },
   previewSanskrit: { fontWeight: '500' },
   previewTranslit: { fontStyle: 'italic' },
-  previewTranslation: { fontFamily: 'Georgia' },
+  previewTranslation: { fontFamily: FONTS.serif },
 });

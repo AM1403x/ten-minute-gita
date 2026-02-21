@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "874503441995",
+    "project_id": "minute-gita",
+    "storage_bucket": "minute-gita.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:874503441995:android:be337ddab04a3ecd0647ce",
+        "android_client_info": {
+          "package_name": "com.tenminutegita.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "874503441995-1c84okepfu4gcpfs8mg1v7vrl1mqqp6h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tenminutegita.app",
+            "certificate_hash": "c699bc9520c5f1dda3370ebf3738a04a995e8024"
+          }
+        },
+        {
+          "client_id": "874503441995-ok9semttjob3iovgq7dkgga1ebt52usd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tenminutegita.app",
+            "certificate_hash": "e2d1cd3d40420da24aeba6ce6d7afbf7da247b81"
+          }
+        },
+        {
+          "client_id": "874503441995-2mgu0aqmmpq2g0n4lsplsu48l8674urm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOQULgNdz8Cu2qRP-26f_k-954xj-xRE0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "874503441995-2mgu0aqmmpq2g0n4lsplsu48l8674urm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "874503441995-k7aoaoq3h96pfj4qtfo81e62pahr6lpg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.tenminutegita.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

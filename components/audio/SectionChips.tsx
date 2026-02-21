@@ -12,7 +12,7 @@ interface SectionChipsProps {
   onChipPress: (chip: ChipType) => void;
 }
 
-export function SectionChips({ activeChip, onChipPress }: SectionChipsProps) {
+export const SectionChips = React.memo(function SectionChips({ activeChip, onChipPress }: SectionChipsProps) {
   const { t } = useLanguage();
   const vc = getVoiceColors(useAppColorScheme());
 
@@ -63,7 +63,7 @@ export function SectionChips({ activeChip, onChipPress }: SectionChipsProps) {
       })}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

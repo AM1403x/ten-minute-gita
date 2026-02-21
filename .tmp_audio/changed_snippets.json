@@ -1,0 +1,397 @@
+{
+  "changed": [
+    {
+      "lang": "en",
+      "id": 2,
+      "verses": "1.04 - 1.06",
+      "fileKey": "Ch01_Verses_04-06",
+      "oldChars": 10379,
+      "newChars": 10362
+    },
+    {
+      "lang": "en",
+      "id": 3,
+      "verses": "1.07 - 1.09",
+      "fileKey": "Ch01_Verses_07-09",
+      "oldChars": 10479,
+      "newChars": 9583
+    },
+    {
+      "lang": "en",
+      "id": 4,
+      "verses": "1.10 - 1.12",
+      "fileKey": "Ch01_Verses_10-12",
+      "oldChars": 10436,
+      "newChars": 11335
+    },
+    {
+      "lang": "en",
+      "id": 7,
+      "verses": "1.19 - 1.21",
+      "fileKey": "Ch01_Verses_19-21",
+      "oldChars": 9761,
+      "newChars": 9530
+    },
+    {
+      "lang": "en",
+      "id": 8,
+      "verses": "1.22 - 1.24",
+      "fileKey": "Ch01_Verses_22-24",
+      "oldChars": 11175,
+      "newChars": 9935
+    },
+    {
+      "lang": "en",
+      "id": 9,
+      "verses": "1.25 - 1.27",
+      "fileKey": "Ch01_Verses_25-27",
+      "oldChars": 11165,
+      "newChars": 9619
+    },
+    {
+      "lang": "en",
+      "id": 10,
+      "verses": "1.28 - 1.30",
+      "fileKey": "Ch01_Verses_28-30",
+      "oldChars": 10981,
+      "newChars": 9745
+    },
+    {
+      "lang": "en",
+      "id": 11,
+      "verses": "1.31 - 1.33",
+      "fileKey": "Ch01_Verses_31-33",
+      "oldChars": 10977,
+      "newChars": 9512
+    },
+    {
+      "lang": "en",
+      "id": 12,
+      "verses": "1.34 - 1.36",
+      "fileKey": "Ch01_Verses_34-36",
+      "oldChars": 10951,
+      "newChars": 9595
+    },
+    {
+      "lang": "en",
+      "id": 13,
+      "verses": "1.37 - 1.39",
+      "fileKey": "Ch01_Verses_37-39",
+      "oldChars": 11591,
+      "newChars": 10804
+    },
+    {
+      "lang": "en",
+      "id": 14,
+      "verses": "1.40 - 1.42",
+      "fileKey": "Ch01_Verses_40-42",
+      "oldChars": 10577,
+      "newChars": 11180
+    },
+    {
+      "lang": "en",
+      "id": 15,
+      "verses": "1.43 - 1.45",
+      "fileKey": "Ch01_Verses_43-45",
+      "oldChars": 10533,
+      "newChars": 10585
+    },
+    {
+      "lang": "en",
+      "id": 16,
+      "verses": "1.46 - 1.47",
+      "fileKey": "Ch01_Verses_46-47",
+      "oldChars": 10533,
+      "newChars": 11205
+    },
+    {
+      "lang": "en",
+      "id": 17,
+      "verses": "2.01 - 2.03",
+      "fileKey": "Ch02_Verses_01-03",
+      "oldChars": 11531,
+      "newChars": 10610
+    },
+    {
+      "lang": "en",
+      "id": 18,
+      "verses": "2.04 - 2.06",
+      "fileKey": "Ch02_Verses_04-06",
+      "oldChars": 11531,
+      "newChars": 9811
+    },
+    {
+      "lang": "en",
+      "id": 19,
+      "verses": "2.07 - 2.09",
+      "fileKey": "Ch02_Verses_07-09",
+      "oldChars": 10575,
+      "newChars": 9947
+    },
+    {
+      "lang": "en",
+      "id": 20,
+      "verses": "2.10 - 2.12",
+      "fileKey": "Ch02_Verses_10-12",
+      "oldChars": 10575,
+      "newChars": 10402
+    },
+    {
+      "lang": "en",
+      "id": 21,
+      "verses": "2.13 - 2.15",
+      "fileKey": "Ch02_Verses_13-15",
+      "oldChars": 10736,
+      "newChars": 9951
+    },
+    {
+      "lang": "en",
+      "id": 22,
+      "verses": "2.16 - 2.18",
+      "fileKey": "Ch02_Verses_16-18",
+      "oldChars": 10902,
+      "newChars": 11207
+    },
+    {
+      "lang": "en",
+      "id": 23,
+      "verses": "2.19 - 2.21",
+      "fileKey": "Ch02_Verses_19-21",
+      "oldChars": 11151,
+      "newChars": 10629
+    },
+    {
+      "lang": "en",
+      "id": 24,
+      "verses": "2.22 - 2.24",
+      "fileKey": "Ch02_Verses_22-24",
+      "oldChars": 10908,
+      "newChars": 10332
+    },
+    {
+      "lang": "en",
+      "id": 25,
+      "verses": "2.25 - 2.27",
+      "fileKey": "Ch02_Verses_25-27",
+      "oldChars": 10884,
+      "newChars": 11048
+    },
+    {
+      "lang": "en",
+      "id": 26,
+      "verses": "2.28 - 2.30",
+      "fileKey": "Ch02_Verses_28-30",
+      "oldChars": 10513,
+      "newChars": 10919
+    },
+    {
+      "lang": "en",
+      "id": 27,
+      "verses": "2.31 - 2.33",
+      "fileKey": "Ch02_Verses_31-33",
+      "oldChars": 10650,
+      "newChars": 10498
+    },
+    {
+      "lang": "en",
+      "id": 28,
+      "verses": "2.34 - 2.36",
+      "fileKey": "Ch02_Verses_34-36",
+      "oldChars": 10650,
+      "newChars": 9535
+    },
+    {
+      "lang": "en",
+      "id": 29,
+      "verses": "2.37 - 2.39",
+      "fileKey": "Ch02_Verses_37-39",
+      "oldChars": 10738,
+      "newChars": 10604
+    },
+    {
+      "lang": "en",
+      "id": 30,
+      "verses": "2.40 - 2.42",
+      "fileKey": "Ch02_Verses_40-42",
+      "oldChars": 11170,
+      "newChars": 10117
+    },
+    {
+      "lang": "en",
+      "id": 31,
+      "verses": "2.43 - 2.45",
+      "fileKey": "Ch02_Verses_43-45",
+      "oldChars": 11145,
+      "newChars": 10000
+    },
+    {
+      "lang": "en",
+      "id": 32,
+      "verses": "2.46 - 2.48",
+      "fileKey": "Ch02_Verses_46-48",
+      "oldChars": 11473,
+      "newChars": 9946
+    },
+    {
+      "lang": "en",
+      "id": 33,
+      "verses": "2.49 - 2.51",
+      "fileKey": "Ch02_Verses_49-51",
+      "oldChars": 10656,
+      "newChars": 10076
+    },
+    {
+      "lang": "en",
+      "id": 34,
+      "verses": "2.52 - 2.54",
+      "fileKey": "Ch02_Verses_52-54",
+      "oldChars": 10700,
+      "newChars": 10828
+    },
+    {
+      "lang": "en",
+      "id": 35,
+      "verses": "2.55 - 2.57",
+      "fileKey": "Ch02_Verses_55-57",
+      "oldChars": 10834,
+      "newChars": 10900
+    },
+    {
+      "lang": "en",
+      "id": 36,
+      "verses": "2.58 - 2.60",
+      "fileKey": "Ch02_Verses_58-60",
+      "oldChars": 11327,
+      "newChars": 10433
+    },
+    {
+      "lang": "en",
+      "id": 37,
+      "verses": "2.61 - 2.63",
+      "fileKey": "Ch02_Verses_61-63",
+      "oldChars": 10870,
+      "newChars": 10288
+    },
+    {
+      "lang": "en",
+      "id": 38,
+      "verses": "2.64 - 2.66",
+      "fileKey": "Ch02_Verses_64-66",
+      "oldChars": 10870,
+      "newChars": 10623
+    },
+    {
+      "lang": "en",
+      "id": 39,
+      "verses": "2.67 - 2.69",
+      "fileKey": "Ch02_Verses_67-69",
+      "oldChars": 10978,
+      "newChars": 10592
+    },
+    {
+      "lang": "en",
+      "id": 40,
+      "verses": "2.70 - 2.72",
+      "fileKey": "Ch02_Verses_70-72",
+      "oldChars": 9951,
+      "newChars": 10261
+    },
+    {
+      "lang": "en",
+      "id": 41,
+      "verses": "3.01 - 3.03",
+      "fileKey": "Ch03_Verses_01-03",
+      "oldChars": 10639,
+      "newChars": 10363
+    },
+    {
+      "lang": "en",
+      "id": 42,
+      "verses": "3.04 - 3.06",
+      "fileKey": "Ch03_Verses_04-06",
+      "oldChars": 10631,
+      "newChars": 10248
+    },
+    {
+      "lang": "en",
+      "id": 43,
+      "verses": "3.07 - 3.09",
+      "fileKey": "Ch03_Verses_07-09",
+      "oldChars": 11058,
+      "newChars": 10810
+    },
+    {
+      "lang": "en",
+      "id": 44,
+      "verses": "3.10 - 3.12",
+      "fileKey": "Ch03_Verses_10-12",
+      "oldChars": 11237,
+      "newChars": 10118
+    },
+    {
+      "lang": "en",
+      "id": 45,
+      "verses": "3.13 - 3.15",
+      "fileKey": "Ch03_Verses_13-15",
+      "oldChars": 11061,
+      "newChars": 9638
+    },
+    {
+      "lang": "en",
+      "id": 46,
+      "verses": "3.16 - 3.18",
+      "fileKey": "Ch03_Verses_16-18",
+      "oldChars": 11114,
+      "newChars": 9937
+    },
+    {
+      "lang": "en",
+      "id": 47,
+      "verses": "3.19 - 3.21",
+      "fileKey": "Ch03_Verses_19-21",
+      "oldChars": 10491,
+      "newChars": 9657
+    },
+    {
+      "lang": "en",
+      "id": 48,
+      "verses": "3.22 - 3.24",
+      "fileKey": "Ch03_Verses_22-24",
+      "oldChars": 10475,
+      "newChars": 9534
+    },
+    {
+      "lang": "en",
+      "id": 49,
+      "verses": "3.25 - 3.27",
+      "fileKey": "Ch03_Verses_25-27",
+      "oldChars": 10475,
+      "newChars": 9763
+    },
+    {
+      "lang": "en",
+      "id": 50,
+      "verses": "3.28 - 3.30",
+      "fileKey": "Ch03_Verses_28-30",
+      "oldChars": 11036,
+      "newChars": 10131
+    },
+    {
+      "lang": "hi",
+      "id": 4,
+      "verses": "1.10 - 1.12",
+      "fileKey": "Ch01_Verses_10-12",
+      "oldChars": 9628,
+      "newChars": 9241
+    },
+    {
+      "lang": "hi",
+      "id": 50,
+      "verses": "3.28 - 3.30",
+      "fileKey": "Ch03_Verses_28-30",
+      "oldChars": 6237,
+      "newChars": 9568
+    }
+  ],
+  "shortReflectionChanged": []
+}

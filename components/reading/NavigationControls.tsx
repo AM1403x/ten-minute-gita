@@ -17,6 +17,7 @@ interface NavigationControlsProps {
   onNext: () => void;
   onMarkComplete: () => void;
   onGoToDay: (day: number) => void;
+  safeAreaBottom?: number;
 }
 
 export function NavigationControls({
@@ -34,9 +35,10 @@ export function NavigationControls({
   onNext,
   onMarkComplete,
   onGoToDay,
+  safeAreaBottom = 0,
 }: NavigationControlsProps) {
   return (
-    <View style={[styles.bottomBar, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
+    <View style={[styles.bottomBar, { backgroundColor: colors.card, borderTopColor: colors.border, paddingBottom: Math.max(32, safeAreaBottom + 12) }]}>
       <View style={styles.navigation}>
         <Pressable
           style={[styles.navButton, snippetId <= 1 && styles.navButtonDisabled]}
@@ -59,22 +61,6 @@ export function NavigationControls({
           <View style={[styles.completedIndicator, { backgroundColor: colorScheme === 'dark' ? '#1B3D1B' : '#E8F5E9' }]}>
             <Text style={[styles.completedIndicatorText, { color: colorScheme === 'dark' ? '#81C784' : '#4CAF50' }]}>{t('reading.alreadyRead')}</Text>
           </View>
-        ) : isNextDay ? (
-          <View style={[styles.previewIndicator, { backgroundColor: colors.card, borderColor: colors.accent }]}>
-            <Text style={[styles.previewIndicatorText, { color: colors.accent }]}>
-              {t('reading.comeBackTomorrow')}
-            </Text>
-          </View>
-        ) : isFutureDay ? (
-          <Pressable
-            style={({ pressed }) => [
-              styles.goToButton,
-              { backgroundColor: colors.accent, opacity: pressed ? 0.8 : 1 },
-            ]}
-            onPress={() => onGoToDay(currentSnippet)}
-          >
-            <Text style={styles.goToButtonText}>{t('reading.goToDay', { day: currentSnippet })}</Text>
-          </Pressable>
         ) : canMarkComplete ? (
           <Pressable
             style={({ pressed }) => [
@@ -84,8 +70,19 @@ export function NavigationControls({
             onPress={onMarkComplete}
             accessibilityLabel={t('reading.markComplete')}
             accessibilityRole="button"
+            testID="mark-complete"
           >
             <Text style={styles.completeButtonText}>{t('reading.markComplete')}</Text>
+          </Pressable>
+        ) : isFutureDay ? (
+          <Pressable
+            style={({ pressed }) => [
+              styles.goToButton,
+              { backgroundColor: colors.accent, opacity: pressed ? 0.8 : 1 },
+            ]}
+            onPress={() => onGoToDay(currentSnippet)}
+          >
+            <Text style={styles.goToButtonText}>{t('reading.goToDay', { day: currentSnippet })}</Text>
           </Pressable>
         ) : (
           <View style={[styles.previewIndicator, { backgroundColor: colors.card, borderColor: colors.textSecondary }]}>
@@ -122,7 +119,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingBottom: 32,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#E0E0E0',
+    borderTopColor: undefined,
   },
   navigation: {
     flexDirection: 'row',

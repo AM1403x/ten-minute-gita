@@ -18,7 +18,7 @@ describe('Reading → Complete → Streak flow', () => {
     expect(state.progress.streak.current).toBe(1);
     expect(state.progress.streak.longest).toBe(1);
     expect(state.progress.streak.lastReadDate).toBe(getDateString());
-    expect(state.progress.readingHistory[getDateString()]).toBe(1);
+    expect(state.progress.readingHistory[getDateString()]).toEqual([1]);
 
     // === Day 2: Simulate "yesterday" read by backdating lastReadDate ===
     const yesterday = new Date();
@@ -163,6 +163,32 @@ describe('Reading → Complete → Streak flow', () => {
     expect(state.progress.settings.fontSize).toBe(24);
     expect(state.progress.settings.showSanskrit).toBe(false);
     expect(state.progress.completedSnippets).toEqual([1, 2, 3]); // preserved
+  });
+
+  it('completes multiple readings in one day (no daily gate)', () => {
+    let state: AppState = { ...initialState, isLoading: false };
+    const today = getDateString();
+
+    // Complete day 1
+    state = appReducer(state, { type: 'MARK_COMPLETE', payload: 1 });
+    expect(state.progress.completedSnippets).toEqual([1]);
+    expect(state.progress.currentSnippet).toBe(2);
+    expect(state.progress.readingHistory[today]).toEqual([1]);
+
+    // Complete day 2 — same calendar day
+    state = appReducer(state, { type: 'MARK_COMPLETE', payload: 2 });
+    expect(state.progress.completedSnippets).toEqual([1, 2]);
+    expect(state.progress.currentSnippet).toBe(3);
+    expect(state.progress.readingHistory[today]).toEqual([1, 2]);
+
+    // Complete day 3 — still same day
+    state = appReducer(state, { type: 'MARK_COMPLETE', payload: 3 });
+    expect(state.progress.completedSnippets).toEqual([1, 2, 3]);
+    expect(state.progress.currentSnippet).toBe(4);
+    expect(state.progress.readingHistory[today]).toEqual([1, 2, 3]);
+
+    // Streak should still be 1 (all same day)
+    expect(state.progress.streak.current).toBeGreaterThanOrEqual(1);
   });
 
   it('reset clears everything', () => {

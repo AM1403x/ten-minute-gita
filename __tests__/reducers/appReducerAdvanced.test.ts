@@ -67,13 +67,20 @@ describe('SIMULATE_PROGRESS', () => {
     expect(result.progress.streak.current).toBe(0);
   });
 
-  it('fills readingHistory with dates', () => {
+  it('fills readingHistory with dates as arrays', () => {
     const state = stateWith({});
     const result = appReducer(state, { type: 'SIMULATE_PROGRESS', payload: 5 });
 
     // Should have 4 entries in readingHistory
     const historyDates = Object.keys(result.progress.readingHistory);
     expect(historyDates).toHaveLength(4);
+
+    // Each value should be an array with one snippet ID
+    for (const date of historyDates) {
+      const val = result.progress.readingHistory[date];
+      expect(Array.isArray(val)).toBe(true);
+      expect(val).toHaveLength(1);
+    }
   });
 
   it('sets lastReadDate to yesterday', () => {

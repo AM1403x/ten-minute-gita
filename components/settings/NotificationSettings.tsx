@@ -3,6 +3,7 @@ import { View, Text, Switch, Pressable, Alert, Platform, StyleSheet } from 'reac
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Settings } from '@/types';
 import Colors from '@/constants/Colors';
+import { letterSpacingStyle } from '@/constants/fonts';
 import {
   scheduleDailyReminder,
   cancelAllNotifications,
@@ -170,7 +171,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    ...letterSpacingStyle(1),
     marginBottom: 8,
     marginLeft: 20,
     marginTop: 8,

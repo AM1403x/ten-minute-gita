@@ -69,7 +69,12 @@ export function appReducer(state: AppState, action: AppAction): AppState {
         streak: newStreak,
         readingHistory: {
           ...progress.readingHistory,
-          [today]: snippetId,
+          [today]: (() => {
+            const existing = progress.readingHistory[today];
+            // Normalize: old format (number) → array, missing → empty array
+            const arr = Array.isArray(existing) ? existing : existing != null ? [existing as unknown as number] : [];
+            return arr.includes(snippetId) ? arr : [...arr, snippetId];
+          })(),
         },
       };
 
@@ -114,7 +119,7 @@ export function appReducer(state: AppState, action: AppAction): AppState {
     case 'SIMULATE_PROGRESS': {
       const targetDay = action.payload;
       const completedSnippets: number[] = [];
-      const readingHistory: { [date: string]: number } = {};
+      const readingHistory: { [date: string]: number[] } = {};
 
       // Complete days 1 through (targetDay - 1), so user is AT targetDay ready to read
       for (let i = 1; i < targetDay; i++) {
@@ -123,7 +128,7 @@ export function appReducer(state: AppState, action: AppAction): AppState {
         const date = new Date();
         date.setDate(date.getDate() - (targetDay - i));
         const dateStr = getDateString(date);
-        readingHistory[dateStr] = i;
+        readingHistory[dateStr] = [i];
       }
 
       // lastReadDate should be yesterday so streak is maintained but today's reading isn't done

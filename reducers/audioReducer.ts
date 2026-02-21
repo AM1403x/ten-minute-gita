@@ -28,7 +28,7 @@ export function audioReducer(state: AudioUIState, action: AudioAction): AudioUIS
         ...state,
         savedTime: action.payload.savedTime,
         hasListened: action.payload.hasListened,
-        speed: action.payload.speed,
+        speed: action.payload.speed ?? state.speed,
       };
 
     case 'TOGGLE_SPEED_PANEL':

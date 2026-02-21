@@ -84,6 +84,8 @@ describe('Multiple readings same day', () => {
     expect(state.progress.streak.lastReadDate).toBe(today);
     // Streak is either 1 (outside grace period) or 2 (during grace period)
     expect(state.progress.streak.current).toBeGreaterThanOrEqual(1);
+    // readingHistory for today should contain snippet 2 (snippet 1 was completed on a prior day)
+    expect(state.progress.readingHistory[today]).toEqual([2]);
   });
 });
 

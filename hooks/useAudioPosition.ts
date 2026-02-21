@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect, useRef } from 'react';
+import { Platform } from 'react-native';
 import { useAudioPlayerContext } from '@/contexts/AudioPlayerContext';
 import { ChipType } from '@/types/audio';
 import {
@@ -34,6 +35,16 @@ export function useAudioPosition(enabled: boolean = true): AudioPositionState {
   const statusRef = useRef(status);
   statusRef.current = status;
 
+  // Reset polledTime when snippet changes (alignedData changes) to avoid
+  // stale position from previous snippet being used via the > 0 fallback
+  const prevAlignedRef = useRef(alignedData);
+  useEffect(() => {
+    if (alignedData !== prevAlignedRef.current) {
+      prevAlignedRef.current = alignedData;
+      setPolledTime(0);
+    }
+  }, [alignedData]);
+
   useEffect(() => {
     if (!isActive || !player) {
       setPolledTime(0);
@@ -68,13 +79,16 @@ export function useAudioPosition(enabled: boolean = true): AudioPositionState {
 
     poll();
 
-    const interval = setInterval(poll, 50);
+    const pollInterval = Platform.OS === 'android' ? 100 : 50;
+    const interval = setInterval(poll, pollInterval);
     return () => clearInterval(interval);
   }, [isActive, player]);
 
-  // Use whichever time source is more advanced — handles cases where
-  // one source lags behind or is stuck at 0
-  const currentTime = Math.max(polledTime, statusTime);
+  // Prefer polledTime (direct native player access) — it is more responsive.
+  // Only fall back to statusTime when polledTime hasn't started yet.
+  // Using Math.max broke seek-backward: after seeking earlier, the stale
+  // higher value from one source kept the highlight stuck at the old position.
+  const currentTime = polledTime > 0 ? polledTime : statusTime;
 
   return useMemo(() => {
     if (!alignedData || !isActive) {

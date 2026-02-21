@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useRef, useCallback } from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
+import { BackHandler, Platform, ToastAndroid } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 import Colors from '@/constants/Colors';
 import { useAppColorScheme } from '@/hooks/useAppColorScheme';
@@ -17,6 +19,26 @@ export default function TabLayout() {
   const colorScheme = useAppColorScheme();
   const colors = Colors[colorScheme];
   const { t } = useLanguage();
+  const lastBackPress = useRef(0);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (Platform.OS !== 'android') return;
+
+      const onBackPress = () => {
+        const now = Date.now();
+        if (now - lastBackPress.current < 2000) {
+          return false; // let the app exit
+        }
+        lastBackPress.current = now;
+        ToastAndroid.show('Press back again to exit', ToastAndroid.SHORT);
+        return true; // consume the event
+      };
+
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => subscription.remove();
+    }, [])
+  );
 
   return (
     <Tabs

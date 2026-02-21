@@ -29,7 +29,7 @@ describe('appReducer', () => {
       const state = stateWith({});
       const result = appReducer(state, { type: 'MARK_COMPLETE', payload: 1 });
       const today = getDateString();
-      expect(result.progress.readingHistory[today]).toBe(1);
+      expect(result.progress.readingHistory[today]).toEqual([1]);
     });
 
     it('does not duplicate if already completed', () => {
@@ -66,6 +66,38 @@ describe('appReducer', () => {
       const state = stateWith({ currentSnippet: 239 });
       const result = appReducer(state, { type: 'MARK_COMPLETE', payload: 239 });
       expect(result.progress.currentSnippet).toBe(239);
+    });
+
+    it('appends multiple completions to readingHistory array for same day', () => {
+      const today = getDateString();
+      let state = stateWith({});
+      state = appReducer(state, { type: 'MARK_COMPLETE', payload: 1 });
+      expect(state.progress.readingHistory[today]).toEqual([1]);
+
+      // Second completion same day
+      state = appReducer(state, { type: 'MARK_COMPLETE', payload: 2 });
+      expect(state.progress.readingHistory[today]).toEqual([1, 2]);
+    });
+
+    it('does not duplicate snippetId in readingHistory array', () => {
+      const today = getDateString();
+      // Manually set up state where snippet 1 is NOT in completedSnippets
+      // but IS in readingHistory (edge case)
+      const state = stateWith({
+        readingHistory: { [today]: [1] },
+      });
+      const result = appReducer(state, { type: 'MARK_COMPLETE', payload: 1 });
+      expect(result.progress.readingHistory[today]).toEqual([1]);
+    });
+
+    it('handles old-format readingHistory (number instead of array) gracefully', () => {
+      const today = getDateString();
+      // Simulate old format still in memory (pre-migration)
+      const state = stateWith({
+        readingHistory: { [today]: 5 as unknown as number[] },
+      });
+      const result = appReducer(state, { type: 'MARK_COMPLETE', payload: 6 });
+      expect(result.progress.readingHistory[today]).toEqual([5, 6]);
     });
   });
 

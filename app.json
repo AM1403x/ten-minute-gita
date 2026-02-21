@@ -2,7 +2,7 @@
   "expo": {
     "name": "10 Minute Gita",
     "slug": "ten-minute-gita",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "tenminutegita",
@@ -17,18 +17,32 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.tenminutegita.app",
       "buildNumber": "2",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "usesAppleSignIn": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "UIBackgroundModes": ["audio"]
+        "UIBackgroundModes": [
+          "audio"
+        ],
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.874503441995-k7aoaoq3h96pfj4qtfo81e62pahr6lpg"
+            ]
+          }
+        ]
       }
     },
     "android": {
+      "package": "com.tenminutegita.app",
+      "versionCode": 1,
+      "googleServicesFile": "./google-services.json",
+      "playStoreUrl": "https://play.google.com/store/apps/details?id=com.tenminutegita.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#FAFAFA"
+        "backgroundColor": "#B31A00"
       },
-      "edgeToEdgeEnabled": true,
-      "package": "com.tenminutegita.app"
+      "edgeToEdgeEnabled": true
     },
     "web": {
       "bundler": "metro",
@@ -45,7 +59,24 @@
         }
       ],
       "@sentry/react-native",
-      "expo-audio"
+      "expo-audio",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ],
+      "expo-apple-authentication",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.874503441995-k7aoaoq3h96pfj4qtfo81e62pahr6lpg"
+        }
+      ],
+      "expo-asset",
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true

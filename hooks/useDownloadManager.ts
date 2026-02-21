@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useSnippets } from '@/hooks/useSnippets';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { logger } from '@/utils/logger';
 import { DownloadedReading, ChapterDownloadInfo, DownloadState } from '@/types/downloads';
 import {
   downloadReading as downloadReadingFile,
@@ -32,7 +33,8 @@ const CHAPTER_TITLES: Record<number, { en: string; hi: string }> = {
   18: { en: 'Liberation Through Renunciation', hi: 'मोक्ष संन्यास योग' },
 };
 
-export function useDownloadManager() {
+/** Internal hook — use useDownloadManager from @/contexts/DownloadManagerContext instead. */
+export function useDownloadManagerState() {
   const { snippets: allSnippets, getSnippet } = useSnippets();
   const { language } = useLanguage();
   const [state, setState] = useState<DownloadState>({
@@ -41,6 +43,8 @@ export function useDownloadManager() {
     totalStorageUsed: 0,
   });
   const mountedRef = useRef(true);
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
   useEffect(() => {
     mountedRef.current = true;
@@ -118,7 +122,8 @@ export function useDownloadManager() {
           }
         });
 
-        const newIndex = { ...state.downloads, [key]: result };
+        // Use stateRef to read latest downloads (avoids stale closure during concurrent downloads)
+        const newIndex = { ...stateRef.current.downloads, [key]: result };
         await saveDownloadIndex(newIndex);
         const storage = await getStorageUsed();
 
@@ -126,13 +131,14 @@ export function useDownloadManager() {
           setState(prev => {
             const { [key]: _, ...restActive } = prev.activeDownloads;
             return {
-              downloads: newIndex,
+              downloads: { ...prev.downloads, [key]: result },
               activeDownloads: restActive,
               totalStorageUsed: storage,
             };
           });
         }
-      } catch {
+      } catch (error) {
+        logger.error('downloadSingleReading', error);
         if (mountedRef.current) {
           setState(prev => {
             const { [key]: _, ...restActive } = prev.activeDownloads;
@@ -141,7 +147,7 @@ export function useDownloadManager() {
         }
       }
     },
-    [language, allSnippets, state.downloads],
+    [language, allSnippets],
   );
 
   const downloadChapter = useCallback(
@@ -151,11 +157,12 @@ export function useDownloadManager() {
 
       for (const snippet of snippets) {
         const key = `${l}_${snippet.id}`;
-        if (state.downloads[key]) continue; // Already downloaded
+        // Use stateRef for fresh check — avoids stale closure skipping downloads
+        if (stateRef.current.downloads[key]) continue;
         await downloadSingleReading(snippet.id, l);
       }
     },
-    [language, allSnippets, state.downloads, downloadSingleReading],
+    [language, allSnippets, downloadSingleReading],
   );
 
   const deleteSingleReading = useCallback(
@@ -164,19 +171,19 @@ export function useDownloadManager() {
       const key = `${l}_${snippetId}`;
 
       await deleteReadingFile(snippetId, l);
-      const { [key]: _, ...rest } = state.downloads;
+      // Use stateRef to avoid stale closure — concurrent deletes could overwrite each other
+      const { [key]: _, ...rest } = stateRef.current.downloads;
       await saveDownloadIndex(rest);
       const storage = await getStorageUsed();
 
       if (mountedRef.current) {
-        setState(prev => ({
-          ...prev,
-          downloads: rest,
-          totalStorageUsed: storage,
-        }));
+        setState(prev => {
+          const { [key]: _d, ...latestRest } = prev.downloads;
+          return { ...prev, downloads: latestRest, totalStorageUsed: storage };
+        });
       }
     },
-    [language, state.downloads],
+    [language],
   );
 
   const deleteChapter = useCallback(
@@ -184,24 +191,27 @@ export function useDownloadManager() {
       const l = (lang || language) as 'en' | 'hi';
       const snippets = allSnippets.filter(s => s.chapter === chapterNumber);
 
-      let newDownloads = { ...state.downloads };
+      const keysToDelete: string[] = [];
       for (const snippet of snippets) {
         const key = `${l}_${snippet.id}`;
         await deleteReadingFile(snippet.id, l);
-        delete newDownloads[key];
+        keysToDelete.push(key);
       }
+      // Use stateRef to avoid stale closure
+      const newDownloads = { ...stateRef.current.downloads };
+      for (const key of keysToDelete) delete newDownloads[key];
       await saveDownloadIndex(newDownloads);
       const storage = await getStorageUsed();
 
       if (mountedRef.current) {
-        setState(prev => ({
-          ...prev,
-          downloads: newDownloads,
-          totalStorageUsed: storage,
-        }));
+        setState(prev => {
+          const updated = { ...prev.downloads };
+          for (const key of keysToDelete) delete updated[key];
+          return { ...prev, downloads: updated, totalStorageUsed: storage };
+        });
       }
     },
-    [language, allSnippets, state.downloads],
+    [language, allSnippets],
   );
 
   const deleteAll = useCallback(
@@ -209,7 +219,8 @@ export function useDownloadManager() {
       const l = (lang || language) as 'en' | 'hi';
       await deleteAllFiles(l);
 
-      const newDownloads = { ...state.downloads };
+      // Use stateRef to avoid stale closure
+      const newDownloads = { ...stateRef.current.downloads };
       for (const key of Object.keys(newDownloads)) {
         if (key.startsWith(`${l}_`)) {
           delete newDownloads[key];
@@ -219,14 +230,16 @@ export function useDownloadManager() {
       const storage = await getStorageUsed();
 
       if (mountedRef.current) {
-        setState(prev => ({
-          ...prev,
-          downloads: newDownloads,
-          totalStorageUsed: storage,
-        }));
+        setState(prev => {
+          const updated = { ...prev.downloads };
+          for (const key of Object.keys(updated)) {
+            if (key.startsWith(`${l}_`)) delete updated[key];
+          }
+          return { ...prev, downloads: updated, totalStorageUsed: storage };
+        });
       }
     },
-    [language, state.downloads],
+    [language],
   );
 
   const isDownloaded = useCallback(
@@ -246,7 +259,7 @@ export function useDownloadManager() {
     [language, state.activeDownloads],
   );
 
-  return {
+  return useMemo(() => ({
     downloads: state.downloads,
     activeDownloads: state.activeDownloads,
     totalStorageUsed: state.totalStorageUsed,
@@ -258,5 +271,5 @@ export function useDownloadManager() {
     deleteAll,
     isDownloaded,
     getDownloadProgress,
-  };
+  }), [state.downloads, state.activeDownloads, state.totalStorageUsed, getChapterInfo, downloadSingleReading, downloadChapter, deleteSingleReading, deleteChapter, deleteAll, isDownloaded, getDownloadProgress]);
 }

@@ -10,6 +10,7 @@ export function HighlightText({ text, query, color, style }: { text: string; que
         editable={false}
         multiline
         scrollEnabled={false}
+        underlineColorAndroid="transparent"
         style={[{ color, padding: 0 }, style]}
       />
     );

@@ -14,7 +14,7 @@ interface AudioParagraphProps {
   isHighlighted: boolean;
 }
 
-export function AudioParagraph({
+export const AudioParagraph = React.memo(function AudioParagraph({
   text,
   fontSize,
   color,
@@ -37,7 +37,7 @@ export function AudioParagraph({
       />
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   highlighted: {

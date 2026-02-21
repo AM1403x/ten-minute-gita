@@ -117,7 +117,7 @@ export const en = {
 
   // CalendarHeatmap
   'calendar.readingHistory': 'Reading History',
-  'calendar.daysTotal': '{{count}} days total',
+  'calendar.daysTotal': '{{count}} {{dayWord}} total',
   'calendar.noReading': 'No reading',
   'calendar.read': 'Read',
   'calendar.today': 'Today',
@@ -174,7 +174,7 @@ export const en = {
   'settings.resetJourney': 'Reset your journey?',
   'settings.resetWarning': 'This will erase your {{streak}}-day streak and {{completed}} completed readings. This cannot be undone.',
   'settings.resetEverything': 'Reset Everything',
-  'settings.version': 'Version 1.0.0',
+  'settings.version': 'Version 1.1.0',
   'settings.madeWith': 'Made with 🙏 for seekers of wisdom',
 
   // Offline Listening
@@ -259,4 +259,66 @@ export const en = {
   'dev.progressSet': 'Progress set to Day {{day}}',
   'dev.invalidDay': 'Invalid Day',
   'dev.invalidRange': 'Please enter a number between 1 and 239',
+
+  // Auth Gate
+  'auth.saveProgress': 'Save Your Spiritual Journey',
+  'auth.subtitle': 'Sign in to keep your progress safe and continue on any device',
+  'auth.continueGoogle': 'Continue with Google',
+  'auth.continueApple': 'Continue with Apple',
+  'auth.continueEmail': 'Continue with Email',
+  'auth.notNow': 'Not now',
+  'auth.requiredTitle': 'Sign In Required',
+  'auth.requiredSubtitle': 'Sign in to continue your daily readings and keep your progress safe across all your devices',
+  'auth.readingsPill': '{{completed}} readings',
+  'auth.streakPill': '{{streak}} day streak',
+  'auth.readingsLabel': 'readings',
+  'auth.streakLabel': 'day streak',
+  'auth.progressSummary': '{{completed}} readings completed',
+
+  // Auth Errors
+  'auth.errorGeneric': 'Something went wrong. Please try again.',
+  'auth.errorNetwork': 'Please check your internet connection',
+  'auth.errorDevBuildRequired': 'Google and Apple sign-in require a development build (not Expo Go).',
+  'auth.errorInvalidEmail': 'Please enter a valid email address.',
+  'auth.errorWrongPassword': 'Incorrect password. Please try again.',
+  'auth.errorEmailInUse': 'This email is already in use. Try signing in instead.',
+  'auth.errorWeakPassword': 'Password should be at least 6 characters.',
+  'auth.errorUserNotFound': 'No account found for this email.',
+
+  // Auth Screen
+  'auth.loginTitle': 'Sign In',
+  'auth.signupTitle': 'Create Account',
+  'auth.emailLabel': 'Email',
+  'auth.passwordLabel': 'Password',
+  'auth.nameLabel': 'Name',
+  'auth.signIn': 'Sign In',
+  'auth.signUp': 'Sign Up',
+  'auth.forgotPassword': 'Forgot password?',
+  'auth.sendResetEmail': 'Send reset email',
+  'auth.toggleToSignUp': 'New here? Create an account',
+  'auth.toggleToSignIn': 'Already have an account? Sign in',
+  'auth.or': 'or',
+
+  // Settings Profile
+  'auth.profileSignOut': 'Sign Out',
+  'auth.profileSignInPrompt': 'Sign in to save your progress',
+  'auth.profileSignInDetail': 'Keep your streak and readings safe across all devices',
+  'auth.signOutConfirmTitle': 'Sign Out?',
+  'auth.signOutConfirmMessage': 'Your progress is saved and will be here when you sign back in',
+  'auth.signOutConfirm': 'Sign Out',
+  'auth.cancel': 'Cancel',
+  'auth.deleteAccount': 'Delete Account',
+  'auth.deleteAccountTitle': 'Delete Account?',
+  'auth.deleteAccountMessage': 'This will permanently delete your account and all synced data. Your local reading progress will be kept. This cannot be undone.',
+  'auth.deleteAccountConfirm': 'Delete',
+  'auth.deleteAccountError': 'Could not delete account. Please try again.',
+
+  // Sync
+  'auth.syncing': 'Syncing your progress...',
+  'auth.syncComplete': 'Progress synced across devices',
+
+  // Force Update
+  'update.title': 'A Better Experience Awaits',
+  'update.subtitle': 'Update to the latest version to continue your journey',
+  'update.button': 'Update Now',
 } as const;

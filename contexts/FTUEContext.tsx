@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CONFIG } from '@/constants/config';
 import { logger } from '@/utils/logger';
@@ -45,14 +45,23 @@ export function FTUEProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const update = useCallback((partial: Partial<FTUEState>) => {
-    setState((prev) => {
-      const next = { ...prev, ...partial };
-      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next)).catch((e) => {
-        logger.error('FTUEContext.update', e);
+  // Persist state changes to AsyncStorage via effect (not inside setState updater,
+  // which can run multiple times in StrictMode)
+  const isInitialLoadRef = useRef(true);
+  useEffect(() => {
+    if (isInitialLoadRef.current) {
+      isInitialLoadRef.current = false;
+      return;
+    }
+    if (loaded) {
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state)).catch((e) => {
+        logger.error('FTUEContext.persist', e);
       });
-      return next;
-    });
+    }
+  }, [state, loaded]);
+
+  const update = useCallback((partial: Partial<FTUEState>) => {
+    setState((prev) => ({ ...prev, ...partial }));
   }, []);
 
   const dismissWelcome = useCallback(() => update({ hasSeenWelcome: true }), [update]);
@@ -61,24 +70,21 @@ export function FTUEProvider({ children }: { children: React.ReactNode }) {
 
   const resetFTUE = useCallback(() => {
     setState(DEFAULT_STATE);
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_STATE)).catch((e) => {
-      logger.error('FTUEContext.reset', e);
-    });
   }, []);
 
+  const value = useMemo(() => ({
+    ...state,
+    loaded,
+    dismissWelcome,
+    markFirstReadingComplete,
+    markNotificationsHandled,
+    resetFTUE,
+  }), [state, loaded, dismissWelcome, markFirstReadingComplete, markNotificationsHandled, resetFTUE]);
+
   return (
-    <FTUEContext.Provider
-      value={{
-        ...state,
-        loaded,
-        dismissWelcome,
-        markFirstReadingComplete,
-        markNotificationsHandled,
-        resetFTUE,
-      }}
-    >
+    <FTUEContext value={value}>
       {children}
-    </FTUEContext.Provider>
+    </FTUEContext>
   );
 }
 

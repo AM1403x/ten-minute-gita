@@ -9,12 +9,13 @@ interface SpeedToggleProps {
   onToggle: () => void;
 }
 
-export function SpeedToggle({ speed, isExpanded, onToggle }: SpeedToggleProps) {
+export function SpeedToggle({ speed = 1.0, isExpanded, onToggle }: SpeedToggleProps) {
   const vc = getVoiceColors(useAppColorScheme());
-  const speedLabel = speed.toFixed(1) + 'x';
-  const isNormal = Math.abs(speed - 1.0) < 0.05;
-  const isSlow = speed < 0.85;
-  const isFast = speed > 1.15;
+  const effectiveSpeed = speed ?? 1.0;
+  const speedLabel = effectiveSpeed.toFixed(1) + 'x';
+  const isNormal = Math.abs(effectiveSpeed - 1.0) < 0.05;
+  const isSlow = effectiveSpeed < 0.85;
+  const isFast = effectiveSpeed > 1.15;
 
   let displayText = speedLabel;
   if (isSlow) displayText = `🐢 ${speedLabel}`;

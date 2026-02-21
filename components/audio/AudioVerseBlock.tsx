@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Platform } from 'react-native';
 import { HighlightText } from '@/components/snippet/HighlightText';
 import { AlignedWord } from '@/types/audio';
 import { getVoiceColors } from '@/constants/config';
 import { useAppColorScheme } from '@/hooks/useAppColorScheme';
+import { FONTS } from '@/constants/fonts';
 
 interface AudioVerseBlockProps {
   sanskrit: string;
@@ -21,7 +22,7 @@ interface AudioVerseBlockProps {
   isTranslationActive: boolean;
 }
 
-export function AudioVerseBlock({
+export const AudioVerseBlock = React.memo(function AudioVerseBlock({
   sanskrit,
   transliteration,
   translation,
@@ -47,9 +48,10 @@ export function AudioVerseBlock({
           editable={false}
           multiline
           scrollEnabled={false}
+          underlineColorAndroid="transparent"
           style={[
             styles.sanskritText,
-            { color: colors.text, fontSize: fontSize + 3, lineHeight: (fontSize + 3) * 1.5, padding: 0 },
+            { color: colors.text, fontSize: fontSize + 3, lineHeight: (fontSize + 3) * (Platform.OS === 'android' ? 1.8 : 1.5), padding: 0 },
           ]}
         />
       );
@@ -120,6 +122,7 @@ export function AudioVerseBlock({
           editable={false}
           multiline
           scrollEnabled={false}
+          underlineColorAndroid="transparent"
           style={[
             styles.translitText,
             {
@@ -150,13 +153,13 @@ export function AudioVerseBlock({
       )}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   verseBlock: { paddingBottom: 20, marginBottom: 20 },
   verseBlockBorder: { borderBottomWidth: 1 },
-  sanskritText: { fontFamily: 'System', marginBottom: 8 },
+  sanskritText: { fontFamily: FONTS.devanagari, marginBottom: 8 },
   translitText: { fontStyle: 'italic', marginBottom: 12 },
   translationBox: { padding: 12, borderRadius: 8, marginTop: 4 },
-  translationText: { fontFamily: 'Georgia' },
+  translationText: { fontFamily: FONTS.serif },
 });

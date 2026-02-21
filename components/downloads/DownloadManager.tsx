@@ -1,17 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Switch, Pressable, StyleSheet, Alert, Platform, Animated } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Switch, Pressable, StyleSheet, Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '@/constants/Colors';
+import { letterSpacingStyle } from '@/constants/fonts';
 import { useAppColorScheme } from '@/hooks/useAppColorScheme';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useDownloadManager } from '@/hooks/useDownloadManager';
+import { useDownloadManager } from '@/contexts/DownloadManagerContext';
 
 const STORAGE_KEY_AUTO_DOWNLOAD = '@offline_auto_download';
 const STORAGE_KEY_AUTO_REMOVE = '@offline_auto_remove';
-
-const EN_SIZE = '~6.2 GB';
-const HI_SIZE = '~4.6 GB';
 
 function formatStorageSize(bytes: number): string {
   if (bytes === 0) return '0 MB';
@@ -28,9 +25,7 @@ export function DownloadManager() {
   const { totalStorageUsed, deleteAll } = useDownloadManager();
 
   const [autoDownload, setAutoDownload] = useState(true);
-  const [autoRemove, setAutoRemove] = useState(true);
-  const [advancedOpen, setAdvancedOpen] = useState(false);
-  const chevronAnim = useRef(new Animated.Value(0)).current;
+  const [autoRemove, setAutoRemove] = useState(false);
 
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY_AUTO_DOWNLOAD).then((v) => {
@@ -49,41 +44,6 @@ export function DownloadManager() {
   const handleAutoRemoveToggle = (value: boolean) => {
     setAutoRemove(value);
     AsyncStorage.setItem(STORAGE_KEY_AUTO_REMOVE, String(value)).catch(() => {});
-  };
-
-  const toggleAdvanced = () => {
-    const toValue = advancedOpen ? 0 : 1;
-    setAdvancedOpen(!advancedOpen);
-    Animated.timing(chevronAnim, {
-      toValue,
-      duration: 200,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const chevronRotation = chevronAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '90deg'],
-  });
-
-  const handleDownloadAll = (lang: 'en' | 'hi') => {
-    const size = lang === 'en' ? EN_SIZE : HI_SIZE;
-    Alert.alert(
-      t('settings.offline.confirmTitle'),
-      t('settings.offline.confirmMessage', { size }),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('settings.offline.confirmAction'),
-          onPress: () => {
-            Alert.alert(
-              t('settings.offline.comingSoonTitle'),
-              t('settings.offline.comingSoonMessage'),
-            );
-          },
-        },
-      ],
-    );
   };
 
   const handleClearAll = () => {
@@ -148,68 +108,25 @@ export function DownloadManager() {
           />
         </View>
 
-        <View style={[styles.divider, { backgroundColor: colors.border }]} />
-
-        {/* Advanced accordion header */}
-        <Pressable
-          style={({ pressed }) => [styles.advancedRow, { opacity: pressed ? 0.7 : 1 }]}
-          onPress={toggleAdvanced}
-        >
-          <Text style={[styles.label, { color: colors.text }]}>
-            {t('settings.offline.advanced')}
-          </Text>
-          <Animated.View style={{ transform: [{ rotate: chevronRotation }] }}>
-            <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
-          </Animated.View>
-        </Pressable>
-
-        {/* Advanced content */}
-        {advancedOpen && (
-          <View style={styles.advancedContent}>
-            <Pressable
-              style={({ pressed }) => [
-                styles.downloadButton,
-                { borderColor: colors.accent, opacity: pressed ? 0.7 : 1 },
-              ]}
-              onPress={() => handleDownloadAll('en')}
-            >
-              <Ionicons name="cloud-download-outline" size={18} color={colors.accent} />
-              <Text style={[styles.downloadButtonText, { color: colors.accent }]}>
-                {t('settings.offline.downloadAllEn', { size: EN_SIZE })}
+        {/* Storage footer — always visible when downloads exist */}
+        {totalStorageUsed > 0 && (
+          <>
+            <View style={[styles.divider, { backgroundColor: colors.border }]} />
+            <View style={styles.storageFooter}>
+              <Text style={[styles.storageCaption, { color: colors.textSecondary }]}>
+                {t('settings.offline.using', { size: formatStorageSize(totalStorageUsed) })}
               </Text>
-            </Pressable>
-
-            <Pressable
-              style={({ pressed }) => [
-                styles.downloadButton,
-                { borderColor: colors.accent, opacity: pressed ? 0.7 : 1 },
-              ]}
-              onPress={() => handleDownloadAll('hi')}
-            >
-              <Ionicons name="cloud-download-outline" size={18} color={colors.accent} />
-              <Text style={[styles.downloadButtonText, { color: colors.accent }]}>
-                {t('settings.offline.downloadAllHi', { size: HI_SIZE })}
-              </Text>
-            </Pressable>
-
-            {totalStorageUsed > 0 && (
-              <>
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.clearButton,
-                    { opacity: pressed ? 0.7 : 1 },
-                  ]}
-                  onPress={handleClearAll}
-                >
-                  <Text style={styles.clearButtonText}>{t('settings.offline.clearAllButton')}</Text>
-                </Pressable>
-
-                <Text style={[styles.storageCaption, { color: colors.textSecondary }]}>
-                  {t('settings.offline.using', { size: formatStorageSize(totalStorageUsed) })}
-                </Text>
-              </>
-            )}
-          </View>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.clearButton,
+                  { opacity: pressed ? 0.7 : 1 },
+                ]}
+                onPress={handleClearAll}
+              >
+                <Text style={styles.clearButtonText}>{t('settings.offline.clearAllButton')}</Text>
+              </Pressable>
+            </View>
+          </>
         )}
       </View>
     </>
@@ -221,7 +138,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    ...letterSpacingStyle(1),
     marginBottom: 8,
     marginLeft: 20,
     marginTop: 8,
@@ -246,40 +163,19 @@ const styles = StyleSheet.create({
   label: { fontSize: 16 },
   subtitle: { fontSize: 13, marginTop: 1 },
   divider: { height: 1, marginVertical: 8 },
-  advancedRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    minHeight: 52,
-    paddingVertical: 8,
-  },
-  advancedContent: {
-    paddingTop: 4,
-    paddingBottom: 2,
-  },
-  downloadButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 10,
-    marginTop: 12,
-    borderWidth: 1,
-    borderRadius: 10,
-  },
-  downloadButtonText: {
-    fontSize: 15,
-    fontWeight: '600',
-  },
   clearButton: {
     alignItems: 'center',
     paddingVertical: 10,
     marginTop: 6,
   },
   clearButtonText: {
-    color: '#FF3B30',
-    fontSize: 14,
-    fontWeight: '600',
+    color: '#D4756B',
+    fontSize: 12,
+    fontWeight: '400',
+  },
+  storageFooter: {
+    alignItems: 'center',
+    paddingTop: 4,
   },
   storageCaption: {
     fontSize: 12,

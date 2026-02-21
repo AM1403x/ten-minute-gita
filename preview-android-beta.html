@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10 Minute Gita — Android Beta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ========== RESET & BASE ========== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+/* ---- Peacock Feather Cursor: native cursor hidden, JS-driven feather ---- */
+@media (pointer: fine) {
+  *, *::before, *::after {
+    cursor: none !important;
+  }
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #1a1410;
+  color: #f5f0e8;
+  min-height: 100vh;
+  overflow-x: hidden;
+  opacity: 0;
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body.loaded {
+  opacity: 1;
+}
+
+a {
+  color: #e8a54b;
+  text-decoration: none;
+  transition: color 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+a:hover {
+  color: #f0c078;
+}
+
+body.exiting {
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ========== BACKGROUND AURA ========== */
+.bg-aura {
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 600px 600px at 30% 20%, rgba(232, 165, 75, 0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 500px at 70% 60%, rgba(240, 192, 120, 0.05) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 400px at 50% 80%, rgba(232, 165, 75, 0.04) 0%, transparent 70%);
+  animation: aura-drift 20s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes aura-drift {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(30px, -20px); }
+  66% { transform: translate(-20px, 15px); }
+}
+
+/* ========== FLOATING PARTICLES ========== */
+.particle {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.particle:nth-child(1) {
+  width: 6px; height: 6px;
+  left: 10%;
+  background: radial-gradient(circle, rgba(232, 165, 75, 0.8), rgba(232, 165, 75, 0) 70%);
+  animation: particle-float 16s linear infinite;
+}
+.particle:nth-child(2) {
+  width: 5px; height: 5px;
+  left: 25%;
+  background: radial-gradient(circle, rgba(240, 192, 120, 0.8), rgba(240, 192, 120, 0) 70%);
+  animation: particle-float 18s linear infinite 3s;
+}
+.particle:nth-child(3) {
+  width: 7px; height: 7px;
+  left: 55%;
+  background: radial-gradient(circle, rgba(232, 165, 75, 0.8), rgba(232, 165, 75, 0) 70%);
+  animation: particle-float 14s linear infinite 1s;
+}
+.particle:nth-child(4) {
+  width: 5px; height: 5px;
+  left: 75%;
+  background: radial-gradient(circle, rgba(240, 192, 120, 0.8), rgba(240, 192, 120, 0) 70%);
+  animation: particle-float 20s linear infinite 5s;
+}
+.particle:nth-child(5) {
+  width: 6px; height: 6px;
+  left: 90%;
+  background: radial-gradient(circle, rgba(232, 165, 75, 0.8), rgba(232, 165, 75, 0) 70%);
+  animation: particle-float 17s linear infinite 2s;
+}
+
+@keyframes particle-float {
+  0% {
+    transform: translateY(100vh) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  90% {
+    opacity: 0.1;
+  }
+  100% {
+    transform: translateY(-20vh) translateX(20px);
+    opacity: 0;
+  }
+}
+
+/* ========== SCROLL PROGRESS BAR ========== */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(90deg, #e8a54b, #f0c078);
+  z-index: 9999;
+  transition: opacity 0.4s ease;
+  will-change: width;
+}
+
+.scroll-progress.hidden {
+  opacity: 0;
+}
+
+/* ========== DIVINE CURSOR SYSTEM — styles handled entirely in JS ========== */
+
+/* ========== SCROLL REVEALS ========== */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px) scale(0.98);
+  transition:
+    opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-delay: var(--delay, 0s);
+}
+
+@media (pointer: fine) {
+  .reveal {
+    filter: blur(4px);
+    transition:
+      opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      filter 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition-delay: var(--delay, 0s);
+  }
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+/* ========== BRAND NAV ========== */
+.brand-nav {
+  text-align: center;
+  padding: 28px 20px 20px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-delay: 0.3s;
+}
+
+body.loaded .brand-nav {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.brand-nav a {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #e8a54b;
+  text-decoration: none;
+}
+
+/* ========== HERO SECTION ========== */
+.hero {
+  text-align: center;
+  padding: 40px 24px 60px;
+  max-width: 640px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.hero .glow {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232, 165, 75, 0.18) 0%, rgba(232, 165, 75, 0.06) 50%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+  animation: hero-aura-pulse 6s ease-in-out infinite;
+}
+
+@keyframes hero-aura-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.hero-icon {
+  font-size: 48px;
+  margin-bottom: 24px;
+  opacity: 0;
+  transform: translateY(25px);
+  transition: opacity 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-delay: 0.5s;
+}
+
+body.loaded .hero-icon {
+  opacity: 1;
+  transform: translateY(0);
+  animation: icon-float 4s ease-in-out infinite 1.4s;
+}
+
+@keyframes icon-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.hero h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(40px, 8vw, 64px);
+  font-weight: 700;
+  line-height: 1.1;
+  color: #f5f0e8;
+  margin-bottom: 16px;
+  opacity: 0;
+  transform: translateY(25px);
+  transition: opacity 1s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-delay: 0.7s;
+}
+
+body.loaded .hero h1 {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.shimmer-text {
+  background: linear-gradient(120deg, #e8a54b 0%, #f5d590 40%, #e8a54b 60%, #c4863a 100%);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: shimmer 6s ease-in-out infinite;
+  position: relative;
+  display: inline-block;
+}
+
+.shimmer-text::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #e8a54b, #f0c078);
+  border-radius: 2px;
+  transition: width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-delay: 1.7s;
+}
+
+body.loaded .shimmer-text::after {
+  width: 100%;
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.hero .subtitle {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #e8a54b;
+  margin-bottom: 20px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-delay: 0.9s;
+}
+
+body.loaded .hero .subtitle {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero .tagline {
+  font-size: 16px;
+  line-height: 1.7;
+  color: rgba(245, 240, 232, 0.55);
+  max-width: 480px;
+  margin: 0 auto;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-delay: 1.1s;
+}
+
+body.loaded .hero .tagline {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ========== FORM CARD ========== */
+.form-card {
+  background: #2a231a;
+  border: 1px solid rgba(232, 165, 75, 0.15);
+  border-radius: 20px;
+  padding: 40px 32px;
+  max-width: 440px;
+  margin: 0 auto 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+.form-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  background: linear-gradient(135deg, transparent 30%, rgba(232, 165, 75, 0.25) 50%, transparent 70%) border-box;
+  background-size: 300% 300%;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: card-shimmer 6s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes card-shimmer {
+  0% { background-position: 100% 100%; }
+  100% { background-position: -100% -100%; }
+}
+
+.form-card h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #f5f0e8;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.form-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(245, 240, 232, 0.55);
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(245, 240, 232, 0.55);
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px 16px;
+  background: #1a1410;
+  border: 1px solid rgba(232, 165, 75, 0.2);
+  border-radius: 12px;
+  color: #f5f0e8;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.form-group input::placeholder {
+  color: rgba(245, 240, 232, 0.3);
+}
+
+.form-group input:focus {
+  border-color: #e8a54b;
+  box-shadow: 0 0 0 3px rgba(232, 165, 75, 0.1);
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #e8a54b, #f0c078);
+  border: none;
+  border-radius: 12px;
+  color: #1a1410;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation: btn-breathe 3s ease-in-out infinite;
+  margin-top: 4px;
+}
+
+@keyframes btn-breathe {
+  0%, 100% { box-shadow: 0 4px 20px rgba(232, 165, 75, 0.2); }
+  50% { box-shadow: 0 4px 40px rgba(232, 165, 75, 0.45); }
+}
+
+.submit-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+  animation: shineSweep 4s ease-in-out infinite;
+}
+
+@keyframes shineSweep {
+  0%, 70% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 32px rgba(232, 165, 75, 0.45);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+.error-msg {
+  text-align: center;
+  font-size: 13px;
+  color: #e07a5f;
+  margin-top: 12px;
+  min-height: 20px;
+  transition: opacity 0.3s ease;
+}
+
+/* ========== SUCCESS CARD ========== */
+.success-card {
+  background: #2a231a;
+  border: 1px solid rgba(232, 165, 75, 0.15);
+  border-radius: 20px;
+  padding: 48px 32px;
+  max-width: 440px;
+  margin: 0 auto 60px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.check-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e8a54b, #f0c078);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1410;
+  transform: scale(0);
+  animation: check-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes check-pop {
+  0% { transform: scale(0); }
+  70% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.success-card h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #f5f0e8;
+  margin-bottom: 12px;
+  opacity: 0;
+  animation: fade-in 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s forwards;
+}
+
+.success-card p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: rgba(245, 240, 232, 0.55);
+  max-width: 340px;
+  margin: 0 auto;
+  opacity: 0;
+  animation: fade-in 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.5s forwards;
+}
+
+@keyframes fade-in {
+  to { opacity: 1; }
+}
+
+.celebration-particles {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.celebration-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #e8a54b;
+  opacity: 1;
+  will-change: transform, opacity;
+}
+
+/* ========== DIVIDER ========== */
+.divider {
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #e8a54b, #f0c078);
+  margin: 0 auto 60px;
+  border-radius: 1px;
+  transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.divider.revealed {
+  width: 40px;
+}
+
+/* ========== STEPS SECTION ========== */
+.steps-section {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 24px 60px;
+}
+
+.section-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #e8a54b;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(24px, 5vw, 32px);
+  font-weight: 700;
+  color: #f5f0e8;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.steps-container {
+  position: relative;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  position: relative;
+}
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e8a54b, #f0c078);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1410;
+  margin-top: 2px;
+  transform: scale(0);
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.step[data-step="0"].revealed .step-number {
+  transform: scale(1);
+  transition-delay: 0s;
+}
+
+.step[data-step="1"].revealed .step-number {
+  transform: scale(1);
+  transition-delay: 0.2s;
+}
+
+.step[data-step="2"].revealed .step-number {
+  transform: scale(1);
+  transition-delay: 0.4s;
+}
+
+.step-text {
+  padding-top: 6px;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.15s, transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.15s;
+}
+
+.step.revealed .step-text {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.step-text h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f5f0e8;
+  margin-bottom: 4px;
+}
+
+.step-text p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(245, 240, 232, 0.55);
+}
+
+.step-divider {
+  width: 0;
+  height: 1px;
+  background: rgba(232, 165, 75, 0.1);
+  margin: 16px 0 16px 56px;
+  transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.step-divider.revealed {
+  width: calc(100% - 56px);
+}
+
+/* ========== iOS NOTE ========== */
+.note {
+  max-width: 480px;
+  margin: 0 auto 60px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.note p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: rgba(245, 240, 232, 0.55);
+}
+
+.note a {
+  color: #e8a54b;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.note a:hover {
+  border-bottom-color: #e8a54b;
+}
+
+/* ========== FOOTER ========== */
+footer {
+  border-top: 1px solid rgba(232, 165, 75, 0.1);
+  padding: 28px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 640px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.brand {
+  font-size: 13px;
+  color: rgba(245, 240, 232, 0.35);
+}
+
+.links {
+  display: flex;
+  gap: 20px;
+}
+
+.links a {
+  font-size: 13px;
+  color: rgba(245, 240, 232, 0.45);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.links a:hover {
+  color: #e8a54b;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 480px) {
+  .hero {
+    padding: 30px 20px 48px;
+  }
+
+  .hero .glow {
+    width: 280px;
+    height: 280px;
+  }
+
+  .form-card {
+    margin-left: 16px;
+    margin-right: 16px;
+    padding: 32px 24px;
+  }
+
+  .success-card {
+    margin-left: 16px;
+    margin-right: 16px;
+    padding: 40px 24px;
+  }
+
+  .steps-section {
+    padding: 0 20px 48px;
+  }
+
+  footer {
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 340px) {
+  .form-card {
+    padding: 28px 18px;
+  }
+
+  .success-card {
+    padding: 32px 18px;
+  }
+
+  .hero h1 {
+    font-size: 36px;
+  }
+}
+
+/* ========== PREFERS REDUCED MOTION ========== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  body {
+    opacity: 1;
+  }
+
+  .bg-aura {
+    animation: none;
+  }
+
+  .particle {
+    display: none !important;
+  }
+
+  #feather-cursor,
+  #sparkle-container,
+  #cursor-glow-aura {
+    display: none !important;
+  }
+
+  .scroll-progress {
+    display: none !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+  .brand-nav {
+    opacity: 1;
+    transform: none;
+  }
+
+  .hero-icon,
+  .hero h1,
+  .hero .subtitle,
+  .hero .tagline {
+    opacity: 1;
+    transform: none;
+  }
+
+  .shimmer-text {
+    background: none;
+    -webkit-text-fill-color: #e8a54b;
+  }
+
+  .shimmer-text::after {
+    width: 100%;
+  }
+
+  .submit-btn {
+    box-shadow: 0 4px 20px rgba(232, 165, 75, 0.3);
+  }
+
+  .submit-btn::after {
+    display: none;
+  }
+
+  .form-card::before {
+    display: none;
+  }
+
+  .divider {
+    width: 40px;
+  }
+
+  .step-number {
+    transform: scale(1) !important;
+  }
+
+  .step-text {
+    opacity: 1;
+    transform: none;
+  }
+
+  .step-divider {
+    width: calc(100% - 56px);
+  }
+
+  .hero .glow {
+    opacity: 1;
+  }
+
+  .check-icon {
+    transform: scale(1);
+  }
+
+  .success-card h2,
+  .success-card p {
+    opacity: 1;
+  }
+
+  .celebration-particle {
+    display: none !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Background Aura -->
+<div class="bg-aura"></div>
+
+<!-- Floating Particles -->
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+
+<!-- Scroll Progress -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- Divine Cursor elements created by JS -->
+
+<!-- Brand Nav -->
+<nav class="brand-nav">
+  <a href="index.html">10 Minute Gita</a>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+  <div class="glow"></div>
+  <div class="hero-icon">&#x1F64F;</div>
+  <h1>Android <span class="shimmer-text">Beta</span></h1>
+  <p class="subtitle">Closed Testing Program</p>
+  <p class="tagline">10 Minute Gita is coming to Android. Be among the first to experience 239 daily Bhagavad Gita readings on Google Play.</p>
+</section>
+
+<!-- Signup Card -->
+<div class="form-card reveal" id="formCard" style="--delay: 0s">
+  <h2>Join the Beta</h2>
+  <p class="form-desc">Use the email linked to your Google Play account so we can add you to the testing track.</p>
+  <form id="betaForm" novalidate>
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" id="name" placeholder="Your name" required autocomplete="name">
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="you@example.com" required autocomplete="email">
+    </div>
+    <button type="submit" class="submit-btn magnetic-btn" id="submitBtn">Sign Up for Beta</button>
+    <p class="error-msg" id="errorMsg"></p>
+  </form>
+</div>
+
+<!-- Success Card (hidden initially) -->
+<div class="success-card" id="successCard" style="display:none;">
+  <div class="check-icon">&#x2713;</div>
+  <h2>You're on the list!</h2>
+  <p>We'll add your email to the Google Play closed testing track and send you an opt-in link shortly. Thank you for helping us test.</p>
+  <div class="celebration-particles" id="celebrationParticles"></div>
+</div>
+
+<!-- Divider -->
+<div class="divider reveal" id="divider1"></div>
+
+<!-- How It Works -->
+<section class="steps-section">
+  <div class="section-label reveal" style="--delay: 0s">How It Works</div>
+  <h2 class="section-title reveal" style="--delay: 0.1s">Three steps to get started</h2>
+  <div class="steps-container" id="stepsContainer">
+    <div class="step" data-step="0">
+      <div class="step-number">1</div>
+      <div class="step-text">
+        <h4>Sign up here</h4>
+        <p>Enter the email linked to your Google Play account.</p>
+      </div>
+    </div>
+    <div class="step-divider" data-divider="0"></div>
+    <div class="step" data-step="1">
+      <div class="step-number">2</div>
+      <div class="step-text">
+        <h4>Accept the invite</h4>
+        <p>We'll add you to the closed testing track. You'll get an email with an opt-in link.</p>
+      </div>
+    </div>
+    <div class="step-divider" data-divider="1"></div>
+    <div class="step" data-step="2">
+      <div class="step-number">3</div>
+      <div class="step-text">
+        <h4>Download &amp; explore</h4>
+        <p>Install from Google Play and share your feedback to help us improve before launch.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Divider -->
+<div class="divider reveal" id="divider2"></div>
+
+<!-- iOS Note -->
+<div class="note reveal" style="--delay: 0s">
+  <p>Already on iOS? The beta is for Android only. The app is live on the <a href="https://apps.apple.com/in/app/10-minute-gita/id6758332047" target="_blank">App Store</a>.</p>
+</div>
+
+<!-- Footer -->
+<footer class="reveal" style="--delay: 0s">
+  <div class="brand">&copy; 2026 AM Apps</div>
+  <div class="links">
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="https://github.com/AM1403x/ten-minute-gita/issues" target="_blank">Support</a>
+  </div>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  // ========== LOADING CEREMONY ==========
+  document.addEventListener('DOMContentLoaded', function() {
+    document.body.classList.add('loaded');
+  });
+
+  // ========== INTERSECTION OBSERVER (scroll reveals) ==========
+  var revealObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.reveal').forEach(function(el) {
+    revealObserver.observe(el);
+  });
+
+  // ========== STEPS STAGGERED REVEAL ==========
+  var stepsContainer = document.getElementById('stepsContainer');
+  var steps = document.querySelectorAll('.step');
+  var stepDividers = document.querySelectorAll('.step-divider');
+
+  var stepsObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        stepsContainer.classList.add('revealed');
+
+        steps.forEach(function(step, i) {
+          setTimeout(function() {
+            step.classList.add('revealed');
+            // Reveal divider after step (except last step)
+            if (stepDividers[i]) {
+              setTimeout(function() {
+                stepDividers[i].classList.add('revealed');
+              }, 200);
+            }
+          }, i * 200);
+        });
+
+        stepsObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  stepsObserver.observe(stepsContainer);
+
+  // ========== FORM SUBMISSION ==========
+  var betaForm = document.getElementById('betaForm');
+  var formCard = document.getElementById('formCard');
+  var successCard = document.getElementById('successCard');
+  var errorMsg = document.getElementById('errorMsg');
+  var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  betaForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    var nameVal = document.getElementById('name').value.trim();
+    var emailVal = document.getElementById('email').value.trim();
+
+    errorMsg.textContent = '';
+
+    if (!nameVal) {
+      errorMsg.textContent = 'Please enter your name.';
+      return;
+    }
+
+    if (!emailVal) {
+      errorMsg.textContent = 'Please enter your email address.';
+      return;
+    }
+
+    if (!emailRegex.test(emailVal)) {
+      errorMsg.textContent = 'Please enter a valid email address.';
+      return;
+    }
+
+    // Success: swap cards
+    formCard.style.display = 'none';
+    successCard.style.display = 'block';
+
+    // Celebration particles
+    spawnCelebrationParticles();
+  });
+
+  function spawnCelebrationParticles() {
+    var container = document.getElementById('celebrationParticles');
+    var count = 8;
+
+    for (var i = 0; i < count; i++) {
+      var p = document.createElement('div');
+      p.className = 'celebration-particle';
+
+      var angle = (i / count) * 360;
+      var radians = angle * (Math.PI / 180);
+      var distance = 60 + Math.random() * 40;
+      var tx = Math.cos(radians) * distance;
+      var ty = Math.sin(radians) * distance;
+      var size = 4 + Math.random() * 4;
+
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      p.style.background = Math.random() > 0.5 ? '#e8a54b' : '#f0c078';
+      p.style.left = '0px';
+      p.style.top = '0px';
+
+      p.style.animation = 'none';
+      p.style.transition = 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+      p.style.transform = 'translate(0, 0)';
+      p.style.opacity = '1';
+
+      container.appendChild(p);
+
+      // Trigger animation in next frame
+      (function(el, x, y) {
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            el.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+            el.style.opacity = '0';
+          });
+        });
+      })(p, tx, ty);
+
+      // Clean up
+      (function(el) {
+        setTimeout(function() {
+          if (el.parentNode) el.parentNode.removeChild(el);
+        }, 900);
+      })(p);
+    }
+  }
+
+  // ========== SCROLL PROGRESS BAR ==========
+  var scrollProgress = document.getElementById('scrollProgress');
+  var scrollTimeout = null;
+
+  window.addEventListener('scroll', function() {
+    var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    var scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    var percent = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+
+    scrollProgress.style.width = percent + '%';
+    scrollProgress.classList.remove('hidden');
+
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(function() {
+      scrollProgress.classList.add('hidden');
+    }, 2000);
+  }, { passive: true });
+
+  // ========== DIVINE CURSOR SYSTEM ==========
+  // JS-driven feather + sparkle trail + click burst + glow aura
+  (function initDivineCursor() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+
+    // --- Feather cursor element (48px SVG) ---
+    var feather = document.createElement('div');
+    feather.id = 'feather-cursor';
+    feather.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">'
+        + '<path d="M10 3 C13 14, 16 26, 22 44" stroke="#8B6914" stroke-width="1.8" fill="none" stroke-linecap="round"/>'
+        + '<path d="M10 3 C13 14, 16 26, 22 44" stroke="#5c4318" stroke-width="0.7" fill="none" stroke-linecap="round" opacity="0.5"/>'
+        + '<path d="M12 12 C7 10, 5 13, 7 16" stroke="#3d7a5a" stroke-width="0.8" fill="none" opacity="0.35"/>'
+        + '<path d="M13 18 C8 16, 5 19, 8 22" stroke="#3d7a5a" stroke-width="0.8" fill="none" opacity="0.3"/>'
+        + '<path d="M15 24 C10 22, 7 25, 10 28" stroke="#3d7a5a" stroke-width="0.7" fill="none" opacity="0.25"/>'
+        + '<path d="M12 12 C17 10, 20 13, 18 16" stroke="#3d7a5a" stroke-width="0.8" fill="none" opacity="0.35"/>'
+        + '<path d="M13 18 C18 16, 21 19, 18 22" stroke="#3d7a5a" stroke-width="0.8" fill="none" opacity="0.3"/>'
+        + '<path d="M15 24 C20 22, 23 25, 20 28" stroke="#3d7a5a" stroke-width="0.7" fill="none" opacity="0.25"/>'
+        + '<ellipse cx="14" cy="17" rx="7" ry="8.5" fill="#1a6b5a" opacity="0.75"/>'
+        + '<ellipse cx="14" cy="17" rx="4.5" ry="5.5" fill="#2a4494" opacity="0.85"/>'
+        + '<ellipse cx="14" cy="17" rx="2.2" ry="2.8" fill="#e8a54b"/>'
+        + '<ellipse cx="14" cy="16.5" rx="1" ry="1.2" fill="#fff3e0" opacity="0.7"/>'
+        + '</svg>';
+    feather.style.cssText = 'position:fixed;width:48px;height:48px;pointer-events:none;z-index:100001;top:0;left:0;will-change:transform;filter:drop-shadow(0 0 3px rgba(232,165,75,0.15));transition:filter 0.2s;';
+    document.body.appendChild(feather);
+
+    var isHover = false;
+    document.addEventListener('mouseover', function(e) {
+      var t = e.target;
+      if (t.matches && (t.matches('a, button, input, [role="button"]') || t.closest('a, button, [role="button"]'))) {
+        isHover = true;
+        feather.style.filter = 'drop-shadow(0 0 8px rgba(232,165,75,0.5)) drop-shadow(0 0 16px rgba(232,165,75,0.25))';
+      }
+    }, { passive: true });
+    document.addEventListener('mouseout', function(e) {
+      var t = e.target;
+      if (t.matches && (t.matches('a, button, input, [role="button"]') || t.closest('a, button, [role="button"]'))) {
+        isHover = false;
+        feather.style.filter = 'drop-shadow(0 0 3px rgba(232,165,75,0.15))';
+      }
+    }, { passive: true });
+
+    // --- Sparkle container ---
+    var ctr = document.createElement('div');
+    ctr.id = 'sparkle-container';
+    ctr.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:100000;overflow:hidden;contain:layout style paint;';
+    document.body.appendChild(ctr);
+
+    // --- Glow aura ---
+    var aura = document.createElement('div');
+    aura.id = 'cursor-glow-aura';
+    aura.style.cssText = 'position:fixed;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(232,165,75,0.06) 0%,rgba(232,165,75,0.02) 40%,transparent 70%);pointer-events:none;z-index:99998;transform:translate(-50%,-50%);will-change:transform;';
+    document.body.appendChild(aura);
+
+    var mx = -200, my = -200, fx = -200, fy = -200, gx = -200, gy = -200;
+    var lastT = 0, tCnt = 0, bCnt = 0;
+    var MT = 50, MB = 15, THR = 40;
+    var tp = ['#e8a54b','#f0c078','#f5d590','#c4863a','#FFD700'];
+    var sp = ['#f5d590','#FFD700','#f0c078'];
+    var sc = 'polygon(50% 0%,61% 35%,100% 50%,61% 65%,50% 100%,39% 65%,0% 50%,39% 35%)';
+
+    function r(a,b){return Math.random()*(b-a)+a;}
+    function pk(a){return a[Math.floor(Math.random()*a.length)];}
+
+    function spawn(x,y,star,burst){
+      var el=document.createElement('div');
+      var sz=star?(burst?r(8,12):r(8,10)):(burst?r(5,10):r(3,6));
+      var cl=star?pk(sp):pk(tp);
+      var du=star?(burst?r(700,1100):r(700,1100)):(burst?r(600,1000):r(500,900));
+      var ox=burst?0:r(-8,8),oy=burst?0:r(-8,8);
+      var op=burst?1:r(0.6,1);
+      var dx,dy;
+      if(burst){var a2=r(0,Math.PI*2),d=r(30,60);dx=Math.cos(a2)*d;dy=Math.sin(a2)*d;}
+      else{dx=r(-20,20);dy=r(-20,20);}
+      el.style.cssText='position:absolute;width:'+sz+'px;height:'+sz+'px;border-radius:'+(star?'0':'50%')+';background:'+cl+';left:'+(x+ox)+'px;top:'+(y+oy)+'px;pointer-events:none;';
+      if(star)el.style.clipPath=sc;
+      ctr.appendChild(el);
+      if(burst)bCnt++;else tCnt++;
+      var an=el.animate([
+        {transform:'translate(0,0) scale(1)',opacity:op},
+        {transform:'translate('+dx+'px,'+dy+'px) scale(0)',opacity:0}
+      ],{duration:du,easing:'ease-out',fill:'forwards'});
+      an.onfinish=function(){el.remove();if(burst)bCnt--;else tCnt--;};
+    }
+
+    document.addEventListener('mousemove',function(e){
+      mx=e.clientX;my=e.clientY;
+      var now=performance.now();
+      if(now-lastT<THR||tCnt>=MT)return;
+      lastT=now;
+      spawn(mx,my,Math.random()<0.28,false);
+    },{passive:true});
+
+    document.addEventListener('click',function(e){
+      var n=Math.floor(r(12,16));
+      for(var i=0;i<n;i++){if(bCnt>=MB)break;spawn(e.clientX,e.clientY,Math.random()<0.35,true);}
+    });
+
+    // --- Animation loop: feather 0.45 lerp (snappy), aura 0.1 lerp (soft) ---
+    (function loop(){
+      fx+=(mx-fx)*0.45;fy+=(my-fy)*0.45;
+      var s=isHover?' scale(1.12)':'';
+      feather.style.transform='translate('+(fx-10)+'px,'+(fy-3)+'px)'+s;
+      gx+=(mx-gx)*0.1;gy+=(my-gy)*0.1;
+      aura.style.left=gx+'px';aura.style.top=gy+'px';
+      requestAnimationFrame(loop);
+    })();
+
+    document.addEventListener('mouseleave',function(){feather.style.opacity='0';});
+    document.addEventListener('mouseenter',function(){feather.style.opacity='1';});
+  })();
+
+  // ========== MAGNETIC BUTTONS (desktop only) ==========
+  if (window.matchMedia('(pointer: fine)').matches) {
+    document.querySelectorAll('.magnetic-btn').forEach(function(btn) {
+      btn.addEventListener('mousemove', function(e) {
+        var rect = btn.getBoundingClientRect();
+        var cx = rect.left + rect.width / 2;
+        var cy = rect.top + rect.height / 2;
+        var dx = (e.clientX - cx) / rect.width;
+        var dy = (e.clientY - cy) / rect.height;
+
+        btn.style.transform = 'translateY(-2px) translate(' + (dx * 3) + 'px, ' + (dy * 3) + 'px)';
+      });
+
+      btn.addEventListener('mouseleave', function() {
+        btn.style.transform = '';
+      });
+    });
+  }
+
+  // ========== PAGE EXIT ANIMATION ==========
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('a');
+    if (!link) return;
+
+    // Skip if target=_blank, hash link, or javascript
+    var href = link.getAttribute('href');
+    if (!href) return;
+    if (link.target === '_blank') return;
+    if (href.charAt(0) === '#') return;
+    if (href.indexOf('javascript:') === 0) return;
+
+    e.preventDefault();
+    document.body.classList.add('exiting');
+
+    setTimeout(function() {
+      window.location.href = href;
+    }, 300);
+  });
+
+})();
+</script>
+</body>
+</html>

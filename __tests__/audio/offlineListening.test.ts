@@ -2,12 +2,11 @@
  * Regression tests for the Offline Listening settings section.
  *
  * Verifies:
- * - Translation keys exist in both EN and HI (including confirmation flow)
- * - DownloadManager has correct structure (toggles, Advanced accordion, outlined buttons with icon, footer)
+ * - Translation keys exist in both EN and HI
+ * - DownloadManager has correct structure (two toggles, storage footer)
+ * - No Advanced accordion or Coming Soon alerts
  * - Toggle state persists to AsyncStorage
- * - Download buttons show size-confirmation alert before coming-soon
  * - Subtitles are short/compact
- * - Advanced accordion hides download buttons and storage info
  * - Old chapter-by-chapter UI is removed
  */
 
@@ -31,19 +30,11 @@ describe('Offline Listening: Translation keys', () => {
     'settings.offline.autoDownloadSub',
     'settings.offline.autoRemove',
     'settings.offline.autoRemoveSub',
-    'settings.offline.advanced',
-    'settings.offline.downloadAllEn',
-    'settings.offline.downloadAllHi',
     'settings.offline.using',
     'settings.offline.clearAll',
     'settings.offline.clearAllButton',
     'settings.offline.clearAllTitle',
     'settings.offline.clearAllMessage',
-    'settings.offline.confirmTitle',
-    'settings.offline.confirmMessage',
-    'settings.offline.confirmAction',
-    'settings.offline.comingSoonTitle',
-    'settings.offline.comingSoonMessage',
   ];
 
   it.each(requiredKeys)('EN has key: %s', (key) => {
@@ -67,9 +58,7 @@ describe('Offline Listening: Translation keys', () => {
   });
 
   it('interpolation works for size params', () => {
-    expect(getTranslation('en', 'settings.offline.downloadAllEn', { size: '~6.2 GB' })).toContain('~6.2 GB');
     expect(getTranslation('en', 'settings.offline.using', { size: '42 MB' })).toContain('42 MB');
-    expect(getTranslation('en', 'settings.offline.confirmMessage', { size: '~6.2 GB' })).toContain('~6.2 GB');
   });
 
   it('subtitles are short (under 20 chars)', () => {
@@ -93,41 +82,23 @@ describe('Offline Listening: Component structure', () => {
     expect((source.match(/<Switch/g) || []).length).toBe(2);
   });
 
-  it('has outlined download buttons with cloud-download icon', () => {
+  it('does NOT have Advanced accordion or Coming Soon alerts', () => {
     const source = readSource();
-    expect(source).toContain('cloud-download-outline');
-    expect(source).toContain('downloadButton');
-    expect(source).toContain('borderWidth: 1');
-    expect(source).toContain('borderRadius: 10');
+    expect(source).not.toContain('advancedOpen');
+    expect(source).not.toContain('advancedContent');
+    expect(source).not.toContain('chevron-forward');
+    expect(source).not.toContain('comingSoon');
+    expect(source).not.toContain('Coming Soon');
+    expect(source).not.toContain('cloud-download-outline');
+    expect(source).not.toContain('downloadButton');
   });
 
-  it('has download buttons for both languages with correct sizes', () => {
+  it('does NOT have Download All buttons or size constants', () => {
     const source = readSource();
-    expect(source).toContain('settings.offline.downloadAllEn');
-    expect(source).toContain('settings.offline.downloadAllHi');
-    expect(source).toContain("EN_SIZE = '~6.2 GB'");
-    expect(source).toContain("HI_SIZE = '~4.6 GB'");
-  });
-
-  it('download buttons show size-confirmation alert then coming-soon', () => {
-    const source = readSource();
-    expect(source).toContain('settings.offline.confirmTitle');
-    expect(source).toContain('settings.offline.confirmMessage');
-    expect(source).toContain('settings.offline.comingSoonTitle');
-  });
-
-  it('has Advanced accordion with animated chevron', () => {
-    const source = readSource();
-    expect(source).toContain('settings.offline.advanced');
-    expect(source).toContain('advancedOpen');
-    expect(source).toContain('chevron-forward');
-    expect(source).toContain('Animated');
-  });
-
-  it('download buttons and storage are inside Advanced section', () => {
-    const source = readSource();
-    expect(source).toContain('advancedContent');
-    expect(source).toContain('advancedOpen');
+    expect(source).not.toContain('downloadAllEn');
+    expect(source).not.toContain('downloadAllHi');
+    expect(source).not.toContain('EN_SIZE');
+    expect(source).not.toContain('HI_SIZE');
   });
 
   it('footer only shows when totalStorageUsed > 0', () => {
@@ -141,6 +112,11 @@ describe('Offline Listening: Component structure', () => {
     expect(source).toContain('sectionHeader');
     expect(source).toContain('borderRadius: 16');
     expect(source).toContain('marginHorizontal: 16');
+  });
+
+  it('imports useDownloadManager from context (shared state)', () => {
+    const source = readSource();
+    expect(source).toContain("from '@/contexts/DownloadManagerContext'");
   });
 });
 

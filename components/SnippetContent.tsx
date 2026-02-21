@@ -14,6 +14,7 @@ import { AudioVerseBlock } from '@/components/audio/AudioVerseBlock';
 import { AudioParagraph } from '@/components/audio/AudioParagraph';
 import { BreathingDots } from '@/components/audio/BreathingDots';
 import { getVoiceColors } from '@/constants/config';
+import { FONTS, letterSpacingStyle } from '@/constants/fonts';
 import { AlignedData } from '@/types/audio';
 import type { AudioHighlightState, WordHighlight } from '@/hooks/useAudioHighlight';
 
@@ -195,6 +196,12 @@ export function SnippetContent({ snippet, isContentLocked = false, isPreviewLimi
 
   // Measure active paragraph's screen Y and report to parent for auto-scroll
   const lastMeasuredKey = useRef<string | null>(null);
+  // Reset when snippet changes so auto-scroll fires for the new snippet's first active section
+  const snippetIdForReset = snippet.id;
+  useEffect(() => {
+    lastMeasuredKey.current = null;
+  }, [snippetIdForReset]);
+
   useEffect(() => {
     if (!isAudioActive || !onActiveParagraphPageY) return;
 
@@ -287,7 +294,7 @@ export function SnippetContent({ snippet, isContentLocked = false, isPreviewLimi
                   const activeWordIdx = isVersePlaying ? (audioHighlight as WordHighlight).activeWordIndex : -1;
 
                   return (
-                    <View key={index} ref={(node) => setParagraphRef(`verse_${index}`, node)}>
+                    <View key={index} ref={(node) => setParagraphRef(`verse_${index}`, node)} collapsable={false}>
                       <AudioVerseBlock
                         sanskrit={sanskritVerses[index] || ''}
                         transliteration={translitVerses[index] || ''}
@@ -372,7 +379,7 @@ export function SnippetContent({ snippet, isContentLocked = false, isPreviewLimi
                   {commentaryParagraphs.map((para, index) => {
                     if (isAudioActive) {
                       return (
-                        <View key={index} ref={(node) => setParagraphRef(`commentary_${index}`, node)}>
+                        <View key={index} ref={(node) => setParagraphRef(`commentary_${index}`, node)} collapsable={false}>
                           <AudioParagraph
                             text={para}
                             fontSize={fontSize}
@@ -418,6 +425,7 @@ export function SnippetContent({ snippet, isContentLocked = false, isPreviewLimi
               <View
                 key={index}
                 ref={(node) => setParagraphRef(`reflection_${index}`, node)}
+                collapsable={false}
                 style={isAudioActive && index === activeReflectionParagraph ? [styles.reflectionHighlighted, { backgroundColor: vc.CORAL_GLOW }] : undefined}
               >
                 <HighlightText
@@ -448,13 +456,13 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   contentContainer: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 80 },
   header: { marginBottom: 24 },
-  chapterLabel: { fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 4 },
+  chapterLabel: { fontSize: 12, fontWeight: '700', textTransform: 'uppercase', ...letterSpacingStyle(2), marginBottom: 4 },
   versesLabel: { fontSize: 13, marginBottom: 10 },
-  title: { fontWeight: '700', fontFamily: 'Georgia' },
+  title: { fontWeight: '700', fontFamily: FONTS.serif },
   versesContainer: { borderRadius: 16, flexDirection: 'row', overflow: 'hidden', marginBottom: 8 },
   versesAccent: { width: 4 },
   versesContent: { flex: 1, padding: 20 },
-  sanskritPreview: { fontFamily: 'System', opacity: 0.7 },
+  sanskritPreview: { fontFamily: FONTS.devanagari, opacity: 0.7 },
   commentarySection: { borderRadius: 16, padding: 20, marginBottom: 8 },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
   sectionEmoji: { fontSize: 20, marginRight: 10 },
@@ -463,8 +471,8 @@ const styles = StyleSheet.create({
   reflectionSection: { borderRadius: 16, padding: 20, marginBottom: 24 },
   reflectionHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 14 },
   reflectionEmoji: { fontSize: 22, marginRight: 10 },
-  reflectionTitle: { fontSize: 14, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 1 },
-  reflectionText: { fontFamily: 'Georgia', fontStyle: 'italic' },
+  reflectionTitle: { fontSize: 14, fontWeight: '600', textTransform: 'uppercase', ...letterSpacingStyle(1) },
+  reflectionText: { fontFamily: FONTS.serifItalic, fontStyle: 'italic' },
   reflectionHighlighted: { borderRadius: 8, paddingHorizontal: 4, marginHorizontal: -4 },
   attribution: { fontSize: 11, textAlign: 'center', fontStyle: 'italic', marginBottom: 20 },
   previewBadge: { backgroundColor: '#FF9800', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8, marginLeft: 8 },

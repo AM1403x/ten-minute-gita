@@ -5,9 +5,15 @@ export function useReducedMotion(): boolean {
   const [reduced, setReduced] = useState(false);
 
   useEffect(() => {
-    AccessibilityInfo.isReduceMotionEnabled().then(setReduced);
+    let cancelled = false;
+    AccessibilityInfo.isReduceMotionEnabled().then((val) => {
+      if (!cancelled) setReduced(val);
+    });
     const sub = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduced);
-    return () => sub.remove();
+    return () => {
+      cancelled = true;
+      sub.remove();
+    };
   }, []);
 
   return reduced;

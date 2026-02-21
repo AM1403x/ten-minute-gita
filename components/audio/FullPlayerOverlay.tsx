@@ -1,8 +1,9 @@
-import React from 'react';
-import { View, Pressable, Text, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Pressable, Text, StyleSheet, BackHandler, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getVoiceColors } from '@/constants/config';
 import { useAppColorScheme } from '@/hooks/useAppColorScheme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ChipType } from '@/types/audio';
 import { ScrubBar } from './ScrubBar';
@@ -47,11 +48,22 @@ export function FullPlayerOverlay({
 }: FullPlayerOverlayProps) {
   const vc = getVoiceColors(useAppColorScheme());
   const { t } = useLanguage();
+  const insets = useSafeAreaInsets();
+
+  // Android back button: minimize overlay instead of navigating away
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      onMinimize();
+      return true;
+    });
+    return () => sub.remove();
+  }, [onMinimize]);
 
   return (
     <View style={styles.overlay}>
       <Pressable style={styles.backdrop} onPress={onMinimize} />
-      <View style={[styles.sheet, { backgroundColor: vc.CREAM }]}>
+      <View style={[styles.sheet, { backgroundColor: vc.CREAM, paddingBottom: Math.max(40, insets.bottom + 16) }]}>
         {/* Minimize Handle */}
         <Pressable style={styles.handleArea} onPress={onMinimize}>
           <View style={[styles.handle, { backgroundColor: vc.HANDLE_GREY }]} />
@@ -102,6 +114,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 200,
+    elevation: 200,
     justifyContent: 'flex-end',
   },
   backdrop: {
@@ -111,7 +124,7 @@ const styles = StyleSheet.create({
   sheet: {
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
-    paddingBottom: 40,
+    paddingBottom: 40, // overridden by inline style with safe area
     paddingTop: 2,
   },
   handleArea: {

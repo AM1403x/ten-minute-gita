@@ -6,7 +6,6 @@ import { StreakIndicator } from '@/components/StreakIndicator';
 import { ReflectionTeaser } from '@/components/ReflectionTeaser';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { WelcomeBanner } from '@/components/WelcomeBanner';
-import { NotificationPrompt } from '@/components/NotificationPrompt';
 import { useApp } from '@/contexts/AppContext';
 import { useSnippets } from '@/hooks/useSnippets';
 import { useStreak } from '@/hooks/useStreak';
@@ -29,12 +28,12 @@ export default function HomeScreen() {
   const { readToday } = useStreak();
   const {
     hasSeenWelcome,
-    hasCompletedFirstReading,
-    hasSetupNotifications,
     loaded: ftueLoaded,
     dismissWelcome,
-    markNotificationsHandled,
   } = useFirstTimeUser();
+
+  const currentSnippetId = state.progress.currentSnippet;
+  const completedSnippets = state.progress.completedSnippets;
 
   const [shareModalVisible, setShareModalVisible] = useState(false);
   const [shareContent, setShareContent] = useState<ShareCardContent | null>(null);
@@ -90,9 +89,6 @@ export default function HomeScreen() {
     if (hour < 17) return t('home.goodAfternoon');
     return t('home.goodEvening');
   };
-
-  const currentSnippetId = state.progress.currentSnippet;
-  const completedSnippets = state.progress.completedSnippets;
 
   const handleStartStreak = () => {
     dismissTooltip();
@@ -156,6 +152,7 @@ export default function HomeScreen() {
             snippet={displaySnippet}
             isCompleted={readToday}
             nextSnippet={upNextSnippet}
+            onBeginReading={handleStartStreak}
           />
           {/* Tooltip hint - points to the reading button */}
           {showTooltip && (
@@ -208,11 +205,6 @@ export default function HomeScreen() {
         content={shareContent}
       />
 
-      {/* Notification prompt - shown on home screen after first reading completion */}
-      <NotificationPrompt
-        visible={hasCompletedFirstReading && !hasSetupNotifications}
-        onDismiss={() => markNotificationsHandled()}
-      />
     </ScrollView>
   );
 }

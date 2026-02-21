@@ -1086,22 +1086,20 @@ describe('Deep Test 13: Smooth navigation (no flash on Next/Previous)', () => {
 
 // ─── Regression: Download icon shows Alert ───────────────────────────
 
-describe('Regression: Download icon shows coming-soon alert', () => {
-  it('download button handler calls Alert.alert with correct message', () => {
-    // Bug: download icon briefly changed shape but did nothing.
-    // Fix: show Alert.alert with "Coming Soon" / "Offline downloads will be available..."
+describe('Regression: Download icon triggers actual download', () => {
+  it('download button calls downloadSingleReading (not Coming Soon alert)', () => {
     const fs = require('fs');
     const readingScreenPath = require('path').resolve(__dirname, '../../app/reading/[id].tsx');
     const source = fs.readFileSync(readingScreenPath, 'utf8');
 
-    // Alert must be imported from react-native
-    expect(source).toContain("Alert");
+    // No more "Coming Soon" alert
+    expect(source).not.toContain("'Coming Soon'");
 
-    // The download button's onPress must call Alert.alert
-    // Find the DOWNLOADS_ENABLED JSX block (the one with cloud-download-outline)
+    // Download icon calls downloadSingleReading and shows reactive state
     const downloadBlock = source.match(/DOWNLOADS_ENABLED[\s\S]*?cloud-download-outline[\s\S]*?<\/Pressable>/);
     expect(downloadBlock).not.toBeNull();
-    expect(downloadBlock![0]).toContain('Alert.alert');
-    expect(downloadBlock![0]).toContain('Offline downloads will be available in a future update');
+    expect(downloadBlock![0]).toContain('downloadSingleReading(snippetId)');
+    expect(downloadBlock![0]).toContain('checkmark-circle');
+    expect(downloadBlock![0]).toContain('ActivityIndicator');
   });
 });

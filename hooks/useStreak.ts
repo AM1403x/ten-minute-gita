@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { AppState as RNAppState } from 'react-native';
 import { useApp } from '@/contexts/AppContext';
 import { isToday, isYesterday, getDateString } from '@/utils/storage';
@@ -9,6 +9,8 @@ export function useStreak() {
 
   // Track current date to ensure memo recomputes when date changes
   const [currentDate, setCurrentDate] = useState(() => getDateString());
+  const currentDateRef = useRef(currentDate);
+  currentDateRef.current = currentDate;
 
   // Update date when app resumes from background
   useEffect(() => {
@@ -20,17 +22,17 @@ export function useStreak() {
     return () => subscription.remove();
   }, []);
 
-  // Check for date change every minute (for midnight transition)
+  // Check for date change every minute (for midnight transition).
+  // Uses a ref for comparison to avoid tearing down/recreating the interval on date change.
   useEffect(() => {
-    const checkDateChange = () => {
+    const interval = setInterval(() => {
       const newDate = getDateString();
-      if (newDate !== currentDate) {
+      if (newDate !== currentDateRef.current) {
         setCurrentDate(newDate);
       }
-    };
-    const interval = setInterval(checkDateChange, 60000);
+    }, 60000);
     return () => clearInterval(interval);
-  }, [currentDate]);
+  }, []);
 
   const streakStatus = useMemo(() => {
     const { lastReadDate, current, longest, freezesAvailable, freezeUsedThisWeek } = streak;

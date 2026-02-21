@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Pressable, Text, StyleSheet } from 'react-native';
+import { View, Pressable, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getVoiceColors } from '@/constants/config';
 import { useAppColorScheme } from '@/hooks/useAppColorScheme';
@@ -7,6 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 interface MiniBarProps {
   isPlaying: boolean;
+  isLoading?: boolean;
   currentTime: number;
   duration: number;
   speed: number;
@@ -17,6 +18,7 @@ interface MiniBarProps {
 
 export function MiniBar({
   isPlaying,
+  isLoading,
   currentTime,
   duration,
   speed,
@@ -30,6 +32,7 @@ export function MiniBar({
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   const formatTimestamp = (seconds: number) => {
+    if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
@@ -48,7 +51,11 @@ export function MiniBar({
           accessibilityRole="button"
           accessibilityLabel={isPlaying ? t('voice.pause') : t('voice.play')}
         >
-          <Ionicons name={isPlaying ? 'pause' : 'play'} size={16} color={vc.WHITE} />
+          {isLoading ? (
+            <ActivityIndicator size="small" color={vc.WHITE} />
+          ) : (
+            <Ionicons name={isPlaying ? 'pause' : 'play'} size={16} color={vc.WHITE} />
+          )}
         </Pressable>
 
         <View style={styles.info}>
@@ -67,6 +74,7 @@ export function MiniBar({
           }}
           accessibilityRole="button"
           accessibilityLabel={t('voice.dismiss')}
+          testID="dismiss-player"
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
           <Ionicons name="close" size={20} color={vc.TEXT_GREY} />
@@ -79,6 +87,7 @@ export function MiniBar({
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 8,
+    elevation: 10,
   },
   playbackRow: {
     flexDirection: 'row',

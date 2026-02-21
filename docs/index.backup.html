@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10 Minute Gita — Daily Bhagavad Gita Readings</title>
+    <meta name="description" content="Discover the Bhagavad Gita through 239 daily 10-minute readings with audio narration. Sanskrit shlokas, word-by-word highlighting, translations, commentary & reflections.">
+    <meta property="og:title" content="10 Minute Gita">
+    <meta property="og:description" content="Listen along as you read the Bhagavad Gita. 239 daily readings with audio narration, word-by-word highlighting, and cloud sync.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tenminutegita.com/">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="10 Minute Gita">
+    <meta name="twitter:description" content="239 daily readings through the Bhagavad Gita with audio narration. Listen, read, and reflect — 10 minutes a day.">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #1A1A1A;
+            color: #F5F5F5;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        a { color: #E07A5F; text-decoration: none; transition: opacity 0.2s; }
+        a:hover { opacity: 0.8; }
+
+        /* Subtle grain texture */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Glow effect behind hero */
+        .glow {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(224,122,95,0.12) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Hero */
+        .hero {
+            position: relative;
+            text-align: center;
+            padding: 100px 24px 70px;
+            max-width: 750px;
+            margin: 0 auto;
+        }
+        .hero-icon {
+            font-size: 72px;
+            margin-bottom: 20px;
+            animation: float 4s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .hero h1 {
+            font-size: 52px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: #F5F5F5;
+            letter-spacing: -1px;
+        }
+        .hero h1 span {
+            background: linear-gradient(135deg, #E07A5F, #F4A261);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero .subtitle {
+            font-size: 15px;
+            color: #666;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+        .hero .tagline {
+            font-size: 19px;
+            color: #A0A0A0;
+            margin-bottom: 36px;
+            max-width: 520px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        .cta-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .app-store-badge {
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        .app-store-badge:hover { transform: scale(1.05); opacity: 1; }
+        .app-store-badge img { height: 52px; }
+        .cta-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 14px 28px;
+            border: 1px solid #404040;
+            border-radius: 12px;
+            color: #A0A0A0;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .cta-secondary:hover {
+            border-color: #E07A5F;
+            color: #E07A5F;
+            opacity: 1;
+        }
+
+        /* Stats strip */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            padding: 48px 24px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat .number {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #E07A5F, #F4A261);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .stat .label {
+            font-size: 13px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 4px;
+        }
+
+        /* Section divider */
+        .divider {
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, #E07A5F, #F4A261);
+            margin: 0 auto;
+            border-radius: 2px;
+        }
+
+        /* Features */
+        .features-section {
+            padding: 64px 24px;
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        .section-label {
+            text-align: center;
+            font-size: 13px;
+            color: #E07A5F;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 48px;
+            color: #F5F5F5;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .feature-card {
+            background: #232323;
+            border: 1px solid #2D2D2D;
+            border-radius: 20px;
+            padding: 32px 24px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .feature-card:hover {
+            border-color: #E07A5F;
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(224,122,95,0.1);
+        }
+        .feature-card .emoji {
+            font-size: 44px;
+            margin-bottom: 16px;
+        }
+        .feature-card h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #F5F5F5;
+        }
+        .feature-card p {
+            font-size: 14px;
+            color: #888;
+            line-height: 1.6;
+        }
+
+        /* What you get */
+        .daily-section {
+            padding: 64px 24px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .daily-list {
+            list-style: none;
+            padding: 0;
+        }
+        .daily-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid #232323;
+        }
+        .daily-list li:last-child { border-bottom: none; }
+        .daily-list .icon {
+            font-size: 24px;
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #232323;
+            border-radius: 10px;
+        }
+        .daily-list .text h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #F5F5F5;
+            margin-bottom: 2px;
+        }
+        .daily-list .text p {
+            font-size: 14px;
+            color: #888;
+        }
+
+        /* Journey / CTA */
+        .journey {
+            text-align: center;
+            padding: 80px 24px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .journey h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #F5F5F5;
+        }
+        .journey p {
+            font-size: 17px;
+            color: #888;
+            margin-bottom: 16px;
+            max-width: 580px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .journey .closing {
+            font-size: 18px;
+            color: #A0A0A0;
+            font-style: italic;
+            margin-top: 28px;
+        }
+        .sanskrit {
+            font-size: 22px;
+            color: #E07A5F;
+            margin-top: 32px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* Quote */
+        .quote-section {
+            padding: 48px 24px;
+            max-width: 650px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .quote {
+            font-size: 20px;
+            font-style: italic;
+            color: #A0A0A0;
+            line-height: 1.7;
+            position: relative;
+            padding: 0 20px;
+        }
+        .quote::before {
+            content: '"';
+            font-size: 60px;
+            color: #E07A5F;
+            opacity: 0.3;
+            position: absolute;
+            top: -20px;
+            left: -10px;
+            font-family: Georgia, serif;
+        }
+        .quote-attr {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 24px;
+            border-top: 1px solid #232323;
+        }
+        footer .brand {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+        footer .links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+        }
+        footer .links a {
+            color: #666;
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+        footer .links a:hover { color: #E07A5F; opacity: 1; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero { padding: 60px 20px 40px; }
+            .hero h1 { font-size: 36px; letter-spacing: -0.5px; }
+            .hero .subtitle { font-size: 12px; letter-spacing: 2px; }
+            .hero .tagline { font-size: 16px; margin-bottom: 28px; }
+            .glow { width: 350px; height: 350px; top: -50px; }
+            .hero-icon { font-size: 56px; }
+            .app-store-badge img { height: 44px; }
+            .cta-group { flex-direction: column; gap: 12px; }
+            .cta-secondary { padding: 12px 24px; font-size: 14px; }
+
+            .stats { gap: 20px; padding: 36px 16px; flex-wrap: wrap; }
+            .stat .number { font-size: 28px; }
+            .stat .label { font-size: 11px; letter-spacing: 1px; }
+
+            .features-section { padding: 48px 16px; }
+            .section-label { font-size: 11px; letter-spacing: 2px; }
+            .section-title { font-size: 24px; margin-bottom: 32px; }
+            .features { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .feature-card { padding: 20px 14px; border-radius: 14px; }
+            .feature-card .emoji { font-size: 32px; margin-bottom: 10px; }
+            .feature-card h3 { font-size: 15px; margin-bottom: 6px; }
+            .feature-card p { font-size: 13px; }
+
+            .daily-section { padding: 48px 16px; }
+            .daily-list li { gap: 12px; padding: 14px 0; }
+            .daily-list .icon { width: 36px; height: 36px; font-size: 20px; border-radius: 8px; }
+            .daily-list .text h4 { font-size: 15px; }
+            .daily-list .text p { font-size: 13px; }
+
+            .quote-section { padding: 36px 20px; }
+            .quote { font-size: 17px; padding: 0 12px; }
+            .quote::before { font-size: 48px; top: -16px; left: -4px; }
+            .quote-attr { font-size: 13px; }
+
+            .journey { padding: 48px 20px; }
+            .journey h2 { font-size: 24px; }
+            .journey p { font-size: 15px; }
+            .journey .closing { font-size: 16px; }
+            .sanskrit { font-size: 18px; margin-top: 24px; }
+
+            footer { padding: 32px 16px; }
+        }
+        @media (max-width: 380px) {
+            .hero h1 { font-size: 30px; }
+            .hero .tagline { font-size: 15px; }
+            .stats { flex-direction: column; gap: 16px; }
+            .features { grid-template-columns: 1fr; }
+            .feature-card { padding: 24px 20px; }
+            .quote { font-size: 16px; }
+            .sanskrit { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="glow"></div>
+        <div class="hero-icon">🙏</div>
+        <h1>10 Minute <span>Gita</span></h1>
+        <p class="subtitle">Daily Bhagavad Gita Readings</p>
+        <p class="tagline">Listen along as you read the Shrimad Bhagavad Gita. Sanskrit shlokas with audio narration, translations, commentary &amp; reflections — one day at a time.</p>
+        <div class="cta-group">
+            <a class="app-store-badge" href="https://apps.apple.com/in/app/10-minute-gita/id6758332047" target="_blank" rel="noopener">
+                <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store">
+            </a>
+            <a class="cta-secondary" href="android.html">Android Beta →</a>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats">
+        <div class="stat">
+            <div class="number">18</div>
+            <div class="label">Chapters</div>
+        </div>
+        <div class="stat">
+            <div class="number">700</div>
+            <div class="label">Verses</div>
+        </div>
+        <div class="stat">
+            <div class="number">239</div>
+            <div class="label">Daily Readings</div>
+        </div>
+        <div class="stat">
+            <div class="number">10</div>
+            <div class="label">Minutes / Day</div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Features -->
+    <section class="features-section" id="features">
+        <div class="section-label">Features</div>
+        <h2 class="section-title">Everything you need for your daily sadhana</h2>
+        <div class="features">
+            <div class="feature-card">
+                <div class="emoji">🎧</div>
+                <h3>Listen Along</h3>
+                <p>Full audio narration for every reading with word-by-word highlighting that follows along as you listen.</p>
+            </div>
+            <div class="feature-card">
+                <div class="emoji">📿</div>
+                <h3>Daily Sadhana</h3>
+                <p>One new reading unlocks each day. Build a consistent spiritual practice, one shloka at a time.</p>
+            </div>
+            <div class="feature-card">
+                <div class="emoji">🕉️</div>
+                <h3>Bilingual</h3>
+                <p>Read in English or हिन्दी. Original Sanskrit with transliteration for correct pronunciation.</p>
+            </div>
+            <div class="feature-card">
+                <div class="emoji">☁️</div>
+                <h3>Sync Across Devices</h3>
+                <p>Sign in with Apple or Google. Your streak, progress, and settings stay in sync everywhere.</p>
+            </div>
+            <div class="feature-card">
+                <div class="emoji">📴</div>
+                <h3>Offline Listening</h3>
+                <p>Download readings to listen offline. No internet needed — perfect for your commute or travel.</p>
+            </div>
+            <div class="feature-card">
+                <div class="emoji">🔥</div>
+                <h3>Streak Tracking</h3>
+                <p>Track your reading streak, view your history on a visual calendar, and celebrate milestones.</p>
+            </div>
+            <div class="feature-card">
+                <div class="emoji">🪷</div>
+                <h3>Share Wisdom</h3>
+                <p>Create beautiful verse cards and share them on WhatsApp, Instagram, or with friends and family.</p>
+            </div>
+            <div class="feature-card">
+                <div class="emoji">🌙</div>
+                <h3>Read Your Way</h3>
+                <p>Light and dark mode, adjustable font size, and playback speed from 0.5x to 1.5x.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- What you get each day -->
+    <section class="daily-section">
+        <div class="section-label">Each Day</div>
+        <h2 class="section-title" style="text-align:center;">What you receive in every reading</h2>
+        <ul class="daily-list">
+            <li>
+                <div class="icon">🔱</div>
+                <div class="text">
+                    <h4>Sanskrit Shlokas</h4>
+                    <p>Original verses in Devanagari script, preserving the sacred text</p>
+                </div>
+            </li>
+            <li>
+                <div class="icon">🗣️</div>
+                <div class="text">
+                    <h4>Transliteration</h4>
+                    <p>Roman script pronunciation guide so you can recite each verse</p>
+                </div>
+            </li>
+            <li>
+                <div class="icon">📖</div>
+                <div class="text">
+                    <h4>Verse Translations</h4>
+                    <p>Clear, verse-by-verse translations in your chosen language</p>
+                </div>
+            </li>
+            <li>
+                <div class="icon">💡</div>
+                <div class="text">
+                    <h4>Commentary</h4>
+                    <p>Thoughtful explanations illuminating the deeper meaning of each teaching</p>
+                </div>
+            </li>
+            <li>
+                <div class="icon">🪷</div>
+                <div class="text">
+                    <h4>Daily Reflection</h4>
+                    <p>A personal insight to carry Krishna's wisdom into your everyday life</p>
+                </div>
+            </li>
+            <li>
+                <div class="icon">🎧</div>
+                <div class="text">
+                    <h4>Audio Narration</h4>
+                    <p>Listen to the full reading narrated aloud, with each word highlighted as it's spoken</p>
+                </div>
+            </li>
+        </ul>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Quote -->
+    <section class="quote-section">
+        <p class="quote">Whenever dharma declines and the purpose of life is forgotten, I manifest myself on earth.</p>
+        <p class="quote-attr">— Shri Krishna, Bhagavad Gita 4.7</p>
+    </section>
+
+    <!-- Journey -->
+    <section class="journey">
+        <h2>Your 239-Day Yatra</h2>
+        <p>Starting from Arjuna's vishada on the battlefield of Kurukshetra, receive Shri Krishna's divine teachings on dharma, karma yoga, bhakti, jnana, and the eternal nature of the atma.</p>
+        <p>Each reading builds on the last, guiding you chapter by chapter through all 18 chapters and 700 verses of the Shrimad Bhagavad Gita.</p>
+        <p class="closing">No distractions. Just you, the Gita, and the grace of Shri Krishna.</p>
+        <div class="sanskrit">॥ श्रीमद्भगवद्गीता की जय ॥</div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="brand">&copy; 2026 AM Apps</div>
+        <div class="links">
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="https://github.com/AM1403x/ten-minute-gita/issues" target="_blank" rel="noopener">Support</a>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,5 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
+import { logger } from '@/utils/logger';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -12,16 +13,33 @@ Notifications.setNotificationHandler({
 });
 
 export const requestNotificationPermissions = async (): Promise<boolean> => {
-  const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  let finalStatus = existingStatus;
+  try {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
 
-  if (existingStatus !== 'granted') {
-    const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+
+    return finalStatus === 'granted';
+  } catch (e) {
+    logger.error('notifications.requestPermissions', e);
+    return false;
   }
-
-  return finalStatus === 'granted';
 };
+
+/** Parse "HH:MM" and return validated [hours, minutes] or null if invalid. */
+export function parseNotificationTime(time: string): { hours: number; minutes: number } | null {
+  const parts = time.split(':');
+  if (parts.length < 2) return null;
+  const hours = Number(parts[0]);
+  const minutes = Number(parts[1]);
+  if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+    return null;
+  }
+  return { hours, minutes };
+}
 
 export interface NotificationContent {
   title: string;
@@ -74,32 +92,41 @@ export const scheduleDailyReminder = async (
   streak: number,
   t?: (key: string, params?: Record<string, string | number>) => string
 ): Promise<string | null> => {
-  const hasPermission = await requestNotificationPermissions();
-  if (!hasPermission) return null;
+  try {
+    const parsed = parseNotificationTime(time);
+    if (!parsed) {
+      logger.warn('notifications', `Invalid time format: "${time}", skipping schedule`);
+      return null;
+    }
 
-  // Cancel existing notifications
-  await cancelAllNotifications();
+    const hasPermission = await requestNotificationPermissions();
+    if (!hasPermission) return null;
 
-  const [hours, minutes] = time.split(':').map(Number);
+    // Cancel existing notifications
+    await cancelAllNotifications();
 
-  const { title, body } = generateNotificationContent(currentSnippet, snippetTitle, streak, t);
+    const { title, body } = generateNotificationContent(currentSnippet, snippetTitle, streak, t);
 
-  const trigger: Notifications.NotificationTriggerInput = {
-    type: Notifications.SchedulableTriggerInputTypes.DAILY,
-    hour: hours,
-    minute: minutes,
-  };
+    const trigger: Notifications.NotificationTriggerInput = {
+      type: Notifications.SchedulableTriggerInputTypes.DAILY,
+      hour: parsed.hours,
+      minute: parsed.minutes,
+    };
 
-  const identifier = await Notifications.scheduleNotificationAsync({
-    content: {
-      title,
-      body,
-      sound: true,
-    },
-    trigger,
-  });
+    const identifier = await Notifications.scheduleNotificationAsync({
+      content: {
+        title,
+        body,
+        sound: true,
+      },
+      trigger,
+    });
 
-  return identifier;
+    return identifier;
+  } catch (e) {
+    logger.error('notifications.scheduleDailyReminder', e);
+    return null;
+  }
 };
 
 export const cancelAllNotifications = async (): Promise<void> => {

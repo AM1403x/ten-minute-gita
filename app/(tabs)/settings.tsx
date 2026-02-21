@@ -13,6 +13,7 @@ import { NotificationSettings } from '@/components/settings/NotificationSettings
 import { SupportSection } from '@/components/settings/SupportSection';
 import { DevTools } from '@/components/settings/DevTools';
 import { DownloadManager } from '@/components/downloads/DownloadManager';
+import { ProfileSection } from '@/components/settings/ProfileSection';
 
 declare const __DEV__: boolean;
 
@@ -23,7 +24,7 @@ export default function SettingsScreen() {
   const { settings } = state.progress;
   const { getSnippet } = useSnippets();
   const { t, language } = useLanguage();
-  const { resetFTUE } = useFirstTimeUser();
+  const { resetFTUE, markFirstReadingComplete, markNotificationsHandled } = useFirstTimeUser();
 
   const currentSnippet = getSnippet(state.progress.currentSnippet);
   const snippetTitle = currentSnippet?.title.replace(/^Day \d+:\s*/, '') || '';
@@ -39,7 +40,8 @@ export default function SettingsScreen() {
         t
       ).catch(() => { /* notification scheduling not critical */ });
     }
-  }, [language]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language, settings.notificationsEnabled, settings.notificationTime, state.progress.currentSnippet, snippetTitle, state.progress.streak.current, t]);
 
   const handleResetProgress = () => {
     const streakDays = state.progress.streak.current;
@@ -67,6 +69,8 @@ export default function SettingsScreen() {
       style={[styles.container, { backgroundColor: colors.background }]}
       contentContainerStyle={styles.scrollContent}
     >
+      <ProfileSection />
+
       <ReadingPreferences
         settings={settings}
         colorScheme={colorScheme}
@@ -110,7 +114,12 @@ export default function SettingsScreen() {
           t={t}
           currentSnippet={state.progress.currentSnippet}
           currentStreak={state.progress.streak.current}
-          onSimulateProgress={simulateProgress}
+          onSimulateProgress={(day: number) => {
+            simulateProgress(day);
+            // Mark FTUE milestones as done so prompts don't appear at simulated days
+            markFirstReadingComplete();
+            markNotificationsHandled();
+          }}
           onResetFTUE={resetFTUE}
         />
       )}

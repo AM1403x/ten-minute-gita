@@ -1,9 +1,11 @@
+import { Platform } from 'react-native';
+
 export const CONFIG = {
   // Streak logic
   GRACE_PERIOD_HOURS: 4,
 
   // Gesture thresholds
-  SWIPE_ACTIVE_OFFSET_X: 30,
+  SWIPE_ACTIVE_OFFSET_X: Platform.OS === 'android' ? 50 : 30,
   SWIPE_FAIL_OFFSET_Y: 10,
 
   // Timer
@@ -14,6 +16,8 @@ export const CONFIG = {
   FTUE_KEY: '@ftue_state',
   LANGUAGE_KEY: '@language',
   DOWNLOAD_INDEX_KEY: '@download_index',
+  AUTH_GATE_DISMISSIBLE_LIMIT: 3, // dismissible prompts for first N post-install completions
+  AUTO_REMOVE_DAYS: 7,
 
   // Audio CDN
   AUDIO_CDN_BASE_URL: 'https://pub-ec8478f2d8da4504a375135b1577cdd4.r2.dev/audio',
@@ -22,6 +26,7 @@ export const CONFIG = {
   // App Store
   APP_STORE_ID: '6758332047',
   APP_STORE_URL: 'https://apps.apple.com/app/10-minute-gita/id6758332047',
+  PLAY_STORE_URL: 'https://play.google.com/store/apps/details?id=com.tenminutegita.app',
   // Voice mode
   VOICE_MODE: {
     SKIP_SECONDS: 15,

@@ -27,6 +27,7 @@ export const defaultProgress: UserProgress = {
   },
   settings: defaultSettings,
   readingHistory: {},
+  readingHistoryVersion: 2,
 };
 
 export const saveProgress = async (progress: UserProgress): Promise<void> => {
@@ -60,10 +61,31 @@ export const loadProgress = async (): Promise<UserProgress> => {
         migratedSettings.darkMode = migratedSettings.darkMode ? 'dark' : 'system';
       }
 
+      // Migrate readingHistory: number → number[] (v1 → v2)
+      let migratedHistory = parsed.readingHistory || {};
+      if (!parsed.readingHistoryVersion || parsed.readingHistoryVersion < 2) {
+        let needsMigration = false;
+        for (const key of Object.keys(migratedHistory)) {
+          if (typeof migratedHistory[key] === 'number') {
+            needsMigration = true;
+            break;
+          }
+        }
+        if (needsMigration) {
+          const newHistory: Record<string, number[]> = {};
+          for (const [date, val] of Object.entries(migratedHistory)) {
+            newHistory[date] = typeof val === 'number' ? [val] : (val as number[]);
+          }
+          migratedHistory = newHistory;
+        }
+      }
+
       // Merge with defaults to handle any new fields
       return {
         ...defaultProgress,
         ...parsed,
+        readingHistory: migratedHistory,
+        readingHistoryVersion: 2,
         settings: { ...defaultSettings, ...migratedSettings },
         streak: { ...defaultProgress.streak, ...parsed.streak },
       };
@@ -96,7 +118,8 @@ export const isToday = (dateString: string): boolean => {
 };
 
 export const isYesterday = (dateString: string): boolean => {
-  const now = new Date();
+  // Use Date.now() so tests can reliably control "now" via jest.spyOn(Date, 'now').
+  const now = new Date(Date.now());
   const yesterday = new Date(now);
   yesterday.setDate(yesterday.getDate() - 1);
   if (dateString === getDateString(yesterday)) return true;

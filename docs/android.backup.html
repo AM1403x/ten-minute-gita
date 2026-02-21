@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Android Beta - 10 Minute Gita</title>
+    <meta name="description" content="Join the Android closed beta for 10 Minute Gita. Help us test before the public launch on Google Play.">
+    <meta property="og:title" content="10 Minute Gita — Android Beta">
+    <meta property="og:description" content="Be among the first to test 10 Minute Gita on Android. Sign up for our closed beta testing program.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tenminutegita.com/android">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="10 Minute Gita — Android Beta">
+    <meta name="twitter:description" content="Be among the first to test 10 Minute Gita on Android. Sign up for the closed beta.">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #1A1A1A;
+            color: #F5F5F5;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        a { color: #E07A5F; text-decoration: none; transition: opacity 0.2s; }
+        a:hover { opacity: 0.8; }
+
+        /* Subtle grain texture */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Glow effect behind hero */
+        .glow {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(224,122,95,0.12) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Brand nav */
+        .brand-nav {
+            text-align: center;
+            padding: 24px;
+        }
+        .brand-nav a {
+            font-size: 14px;
+            color: #666;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .brand-nav a:hover { color: #E07A5F; }
+
+        /* Hero */
+        .hero {
+            position: relative;
+            text-align: center;
+            padding: 60px 24px 40px;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+        .hero-icon {
+            font-size: 72px;
+            margin-bottom: 20px;
+            animation: float 4s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: #F5F5F5;
+            letter-spacing: -1px;
+        }
+        .hero h1 span {
+            background: linear-gradient(135deg, #E07A5F, #F4A261);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero .subtitle {
+            font-size: 14px;
+            color: #666;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+        .hero .tagline {
+            font-size: 18px;
+            color: #A0A0A0;
+            margin-bottom: 12px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        /* Form card */
+        .form-card {
+            background: #232323;
+            border: 1px solid #2D2D2D;
+            border-radius: 20px;
+            padding: 40px 32px;
+            max-width: 440px;
+            margin: 32px auto 48px;
+            position: relative;
+            z-index: 1;
+        }
+        .form-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #F5F5F5;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+        .form-card .form-desc {
+            font-size: 14px;
+            color: #888;
+            text-align: center;
+            margin-bottom: 28px;
+            line-height: 1.5;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: #A0A0A0;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #1A1A1A;
+            border: 1px solid #404040;
+            border-radius: 12px;
+            color: #F5F5F5;
+            font-size: 16px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus {
+            border-color: #E07A5F;
+        }
+        .form-group input::placeholder {
+            color: #555;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #E07A5F, #F4A261);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+            margin-top: 8px;
+            font-family: inherit;
+        }
+        .submit-btn:hover {
+            transform: scale(1.02);
+        }
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .error-msg {
+            color: #E07A5F;
+            font-size: 14px;
+            margin-top: 12px;
+            text-align: center;
+            display: none;
+        }
+
+        /* Success state */
+        .success-card {
+            background: #232323;
+            border: 1px solid #2D2D2D;
+            border-radius: 20px;
+            padding: 48px 32px;
+            max-width: 440px;
+            margin: 32px auto 48px;
+            text-align: center;
+            display: none;
+            position: relative;
+            z-index: 1;
+        }
+        .success-card .check-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #E07A5F, #F4A261);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 28px;
+            color: #fff;
+        }
+        .success-card h2 {
+            font-size: 24px;
+            color: #F5F5F5;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        .success-card p {
+            font-size: 15px;
+            color: #A0A0A0;
+            line-height: 1.6;
+        }
+
+        /* Section label */
+        .section-label {
+            text-align: center;
+            font-size: 13px;
+            color: #E07A5F;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 36px;
+            color: #F5F5F5;
+        }
+
+        /* Steps */
+        .steps-section {
+            padding: 48px 24px;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 18px 0;
+            border-bottom: 1px solid #232323;
+        }
+        .step:last-child { border-bottom: none; }
+        .step-number {
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #E07A5F, #F4A261);
+            border-radius: 50%;
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .step-text h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #F5F5F5;
+            margin-bottom: 4px;
+        }
+        .step-text p {
+            font-size: 14px;
+            color: #888;
+            line-height: 1.5;
+        }
+
+        /* Divider */
+        .divider {
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, #E07A5F, #F4A261);
+            margin: 0 auto;
+            border-radius: 2px;
+        }
+
+        /* Note */
+        .note {
+            text-align: center;
+            max-width: 440px;
+            margin: 32px auto 0;
+            padding: 0 24px;
+        }
+        .note p {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 24px;
+            border-top: 1px solid #232323;
+            margin-top: 48px;
+        }
+        footer .brand {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+        footer .links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+        }
+        footer .links a {
+            color: #666;
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+        footer .links a:hover { color: #E07A5F; opacity: 1; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero { padding: 40px 20px 24px; }
+            .hero h1 { font-size: 34px; letter-spacing: -0.5px; }
+            .hero .subtitle { font-size: 12px; letter-spacing: 2px; }
+            .hero .tagline { font-size: 16px; }
+            .hero-icon { font-size: 56px; }
+            .glow { width: 350px; height: 350px; top: -50px; }
+
+            .form-card { padding: 28px 20px; margin: 24px 16px 36px; }
+            .form-card h2 { font-size: 20px; }
+            .success-card { padding: 36px 20px; margin: 24px 16px 36px; }
+
+            .section-label { font-size: 11px; letter-spacing: 2px; }
+            .section-title { font-size: 20px; margin-bottom: 28px; }
+
+            .steps-section { padding: 36px 16px; }
+            .step { gap: 12px; padding: 14px 0; }
+            .step-number { width: 32px; height: 32px; font-size: 13px; }
+            .step-text h4 { font-size: 15px; }
+            .step-text p { font-size: 13px; }
+
+            footer { padding: 32px 16px; }
+        }
+        @media (max-width: 380px) {
+            .hero h1 { font-size: 28px; }
+            .hero .tagline { font-size: 15px; }
+            .form-card { padding: 24px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Brand nav -->
+    <nav class="brand-nav">
+        <a href="index.html">10 Minute Gita</a>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="glow"></div>
+        <div class="hero-icon">🙏</div>
+        <h1>Android <span>Beta</span></h1>
+        <p class="subtitle">Closed Testing Program</p>
+        <p class="tagline">
+            10 Minute Gita is coming to Android. Be among the first to experience
+            239 daily Bhagavad Gita readings on Google Play.
+        </p>
+    </section>
+
+    <!-- Sign-up form -->
+    <div class="form-card" id="formCard">
+        <h2>Join the Beta</h2>
+        <p class="form-desc">Use the email linked to your Google Play account so we can add you to the testing track.</p>
+        <form id="betaForm" novalidate>
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name"
+                       placeholder="Your name" required autocomplete="name">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email"
+                       placeholder="you@example.com" required autocomplete="email">
+            </div>
+            <button type="submit" class="submit-btn" id="submitBtn">
+                Sign Up for Beta
+            </button>
+            <p class="error-msg" id="errorMsg"></p>
+        </form>
+    </div>
+
+    <!-- Success state (hidden initially) -->
+    <div class="success-card" id="successCard">
+        <div class="check-icon">&#10003;</div>
+        <h2>You're on the list!</h2>
+        <p>
+            We'll add your email to the Google Play closed testing track and
+            send you an opt-in link shortly. Thank you for helping us test.
+        </p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- What happens next -->
+    <section class="steps-section">
+        <div class="section-label">How It Works</div>
+        <h2 class="section-title">Three steps to get started</h2>
+
+        <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-text">
+                <h4>Sign up here</h4>
+                <p>Enter the email linked to your Google Play account.</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-text">
+                <h4>Accept the invite</h4>
+                <p>We'll add you to the closed testing track. You'll get an email with an opt-in link.</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-text">
+                <h4>Download &amp; explore</h4>
+                <p>Install from Google Play and share your feedback to help us improve before launch.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="note">
+        <p>Already on iOS? The beta is for Android only. The app is live on the <a href="https://apps.apple.com/in/app/10-minute-gita/id6758332047" target="_blank" rel="noopener">App Store</a>.</p>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="brand">&copy; 2026 AM Apps</div>
+        <div class="links">
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="https://github.com/AM1403x/ten-minute-gita/issues" target="_blank" rel="noopener">Support</a>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK (compat mode — works without a bundler) -->
+    <script src="https://www.gstatic.com/firebasejs/11.3.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.3.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase web app config
+        // REPLACE apiKey and appId after registering a web app in Firebase Console
+        firebase.initializeApp({
+            apiKey: "AIzaSyBgVjaIHyqGfreUMPDlxXTtcJR8fhFAJ3k",
+            authDomain: "minute-gita.firebaseapp.com",
+            projectId: "minute-gita",
+            storageBucket: "minute-gita.firebasestorage.app",
+            messagingSenderId: "874503441995",
+            appId: "1:874503441995:web:e00930c4b6221c6c0647ce"
+        });
+
+        var db = firebase.firestore();
+        var form = document.getElementById('betaForm');
+        var formCard = document.getElementById('formCard');
+        var successCard = document.getElementById('successCard');
+        var submitBtn = document.getElementById('submitBtn');
+        var errorMsg = document.getElementById('errorMsg');
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function showError(msg) {
+            errorMsg.textContent = msg;
+            errorMsg.style.display = 'block';
+        }
+
+        function hideError() {
+            errorMsg.style.display = 'none';
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            hideError();
+
+            var name = document.getElementById('name').value.trim();
+            var email = document.getElementById('email').value.trim().toLowerCase();
+
+            if (!name) {
+                showError('Please enter your name.');
+                return;
+            }
+            if (name.length > 200) {
+                showError('Name is too long.');
+                return;
+            }
+            if (!email) {
+                showError('Please enter your email address.');
+                return;
+            }
+            if (!isValidEmail(email)) {
+                showError('Please enter a valid email address.');
+                return;
+            }
+            if (email.length > 200) {
+                showError('Email is too long.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting\u2026';
+
+            db.collection('beta_testers').add({
+                name: name,
+                email: email,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(function() {
+                formCard.style.display = 'none';
+                successCard.style.display = 'block';
+            }).catch(function(err) {
+                console.error('Submission error:', err);
+                showError('Something went wrong. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Sign Up for Beta';
+            });
+        });
+    </script>
+
+</body>
+</html>

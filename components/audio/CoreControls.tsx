@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Pressable, Text, StyleSheet } from 'react-native';
+import { View, Pressable, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getVoiceColors } from '@/constants/config';
 import { useAppColorScheme } from '@/hooks/useAppColorScheme';
@@ -7,6 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 interface CoreControlsProps {
   isPlaying: boolean;
+  isLoading?: boolean;
   hasListened?: boolean;
   onTogglePlayPause: () => void;
   onSkipBack: () => void;
@@ -15,6 +16,7 @@ interface CoreControlsProps {
 
 export function CoreControls({
   isPlaying,
+  isLoading,
   hasListened,
   onTogglePlayPause,
   onSkipBack,
@@ -47,12 +49,16 @@ export function CoreControls({
         accessibilityLabel={isPlaying ? t('voice.pause') : t('voice.play')}
         accessibilityRole="button"
       >
-        <Ionicons
-          name={isPlaying ? 'pause' : (hasListened && !isPlaying ? 'reload' : 'play')}
-          size={28}
-          color={vc.WHITE}
-          style={!isPlaying && !hasListened ? { marginLeft: 3 } : undefined}
-        />
+        {isLoading ? (
+          <ActivityIndicator size="small" color={vc.WHITE} />
+        ) : (
+          <Ionicons
+            name={isPlaying ? 'pause' : 'play'}
+            size={28}
+            color={vc.WHITE}
+            style={!isPlaying ? { marginLeft: 3 } : undefined}
+          />
+        )}
       </Pressable>
 
       <Pressable

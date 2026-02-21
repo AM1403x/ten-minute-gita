@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CONFIG } from '@/constants/config';
+import { FONTS } from '@/constants/fonts';
 import type { ShareCardContent } from '@/utils/shareCard';
 
 const SIZE = CONFIG.SHARE_CARD.SIZE;
@@ -102,7 +103,7 @@ const styles = StyleSheet.create({
   },
   mainText: {
     fontSize: 44,
-    fontFamily: 'Georgia',
+    fontFamily: FONTS.serif,
     textAlign: 'center',
     lineHeight: 64,
   },

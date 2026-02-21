@@ -1,22 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CONFIG, getVoiceColors } from '@/constants/config';
-import { useAppColorScheme } from '@/hooks/useAppColorScheme';
+import { CONFIG } from '@/constants/config';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const { VOICE_MODE } = CONFIG;
+// Tooltip is always a dark popover — use a fixed dark background so it's
+// readable in both light and dark modes (dark mode's TEXT_DARK is actually light).
+const TOOLTIP_BG = CONFIG.VOICE_COLORS.TEXT_DARK; // '#1A1A1A'
+const TOOLTIP_TEXT = '#FFFFFF';
 
 export function FirstTimeTooltip() {
   const { t } = useLanguage();
-  const vc = getVoiceColors(useAppColorScheme());
   const [visible, setVisible] = useState(false);
   const opacity = useState(() => new Animated.Value(0))[0];
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | null = null;
+    let cancelled = false;
 
     AsyncStorage.getItem(VOICE_MODE.FIRST_TOOLTIP_KEY).then((value) => {
+      if (cancelled) return;
       if (!value) {
         setVisible(true);
         AsyncStorage.setItem(VOICE_MODE.FIRST_TOOLTIP_KEY, 'true').catch(() => {});
@@ -27,28 +31,35 @@ export function FirstTimeTooltip() {
         }).start();
 
         timer = setTimeout(() => {
+          if (cancelled) return;
           Animated.timing(opacity, {
             toValue: 0,
             duration: 300,
             useNativeDriver: true,
-          }).start(() => setVisible(false));
+          }).start(({ finished }) => {
+            if (finished && !cancelled) setVisible(false);
+          });
         }, VOICE_MODE.TOOLTIP_DURATION_MS);
       }
     });
 
     return () => {
+      cancelled = true;
       if (timer) clearTimeout(timer);
+      opacity.stopAnimation();
     };
   }, [opacity]);
 
   if (!visible) return null;
 
   return (
-    <Animated.View style={[styles.container, { opacity, backgroundColor: vc.TEXT_DARK }]}>
-      <Text style={[styles.text, { color: vc.WHITE }]}>
+    <Animated.View style={[styles.container, { opacity, backgroundColor: TOOLTIP_BG }]}>
+      <Text style={[styles.text, { color: TOOLTIP_TEXT }]}>
         {t('voice.tooltip')} {'\u2193'}
       </Text>
-      <View style={[styles.arrow, { borderTopColor: vc.TEXT_DARK }]} />
+      <View style={styles.arrowContainer}>
+        <View style={[styles.arrow, { borderTopColor: TOOLTIP_BG }]} />
+      </View>
     </Animated.View>
   );
 }
@@ -65,12 +76,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
   },
-  arrow: {
+  arrowContainer: {
     position: 'absolute',
     bottom: -5,
-    alignSelf: 'center',
-    left: '50%',
-    marginLeft: -5,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  arrow: {
     width: 0,
     height: 0,
     borderLeftWidth: 5,

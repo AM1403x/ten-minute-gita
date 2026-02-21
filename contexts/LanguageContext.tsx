@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Animated } from 'react-native';
 import { Language, getTranslation } from '@/constants/translations';
@@ -81,10 +81,14 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     return Array.isArray(result) ? result : [result];
   }, [language]);
 
+  const value = useMemo(() => ({
+    language, setLanguage, t, tArray, fadeAnim,
+  }), [language, setLanguage, t, tArray, fadeAnim]);
+
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t, tArray, fadeAnim }}>
+    <LanguageContext value={value}>
       {children}
-    </LanguageContext.Provider>
+    </LanguageContext>
   );
 }
 

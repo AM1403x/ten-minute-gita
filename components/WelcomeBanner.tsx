@@ -86,6 +86,7 @@ export function WelcomeBanner({ visible, onDismiss }: WelcomeBannerProps) {
                 onPress={handleDismiss}
                 accessibilityRole="button"
                 accessibilityLabel={t('ftue.getStarted')}
+                testID="ftue-get-started"
               >
                 <Text style={styles.continueText}>{t('ftue.getStarted')}</Text>
               </Pressable>

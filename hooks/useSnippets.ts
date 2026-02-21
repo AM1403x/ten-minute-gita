@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import snippetsDataEn from '@/data/gita_snippets.json';
 import snippetsDataHi from '@/data/gita_snippets_hindi.json';
 import { Snippet } from '@/types';
@@ -12,17 +12,17 @@ export function useSnippets() {
     return data.snippets as Snippet[];
   }, [language]);
 
-  const getSnippet = (id: number): Snippet | undefined => {
+  const getSnippet = useCallback((id: number): Snippet | undefined => {
     return snippets.find((s) => s.id === id);
-  };
+  }, [snippets]);
 
-  const getNextSnippet = (currentId: number): Snippet | undefined => {
+  const getNextSnippet = useCallback((currentId: number): Snippet | undefined => {
     return snippets.find((s) => s.id === currentId + 1);
-  };
+  }, [snippets]);
 
-  const getPrevSnippet = (currentId: number): Snippet | undefined => {
+  const getPrevSnippet = useCallback((currentId: number): Snippet | undefined => {
     return snippets.find((s) => s.id === currentId - 1);
-  };
+  }, [snippets]);
 
   return {
     snippets,

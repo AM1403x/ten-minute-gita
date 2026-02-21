@@ -140,6 +140,50 @@ describe('loadProgress — edge cases', () => {
     const result = await loadProgress();
     expect(result.settings.darkMode).toBe('light');
   });
+
+  it('migrates readingHistory from number to number[]', async () => {
+    // Simulate v1 data: no readingHistoryVersion field, number values
+    const { readingHistoryVersion: _, ...v1Progress } = defaultProgress;
+    const oldData = {
+      ...v1Progress,
+      readingHistory: { '2025-01-01': 1, '2025-01-02': 2, '2025-01-03': 3 },
+    };
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(oldData));
+    const result = await loadProgress();
+    expect(result.readingHistory['2025-01-01']).toEqual([1]);
+    expect(result.readingHistory['2025-01-02']).toEqual([2]);
+    expect(result.readingHistory['2025-01-03']).toEqual([3]);
+    expect(result.readingHistoryVersion).toBe(2);
+  });
+
+  it('readingHistory migration is idempotent (already-migrated data unchanged)', async () => {
+    const data = {
+      ...defaultProgress,
+      readingHistory: { '2025-01-01': [1], '2025-01-02': [2, 3] },
+      readingHistoryVersion: 2,
+    };
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    const result = await loadProgress();
+    expect(result.readingHistory['2025-01-01']).toEqual([1]);
+    expect(result.readingHistory['2025-01-02']).toEqual([2, 3]);
+  });
+
+  it('readingHistory migration handles mixed old/new values', async () => {
+    // Edge case: partially migrated data (shouldn't happen but be safe)
+    const { readingHistoryVersion: _, ...v1Progress } = defaultProgress;
+    const mixedData = {
+      ...v1Progress,
+      readingHistory: { '2025-01-01': 1, '2025-01-02': [2] },
+    };
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(mixedData));
+    const result = await loadProgress();
+    expect(result.readingHistory['2025-01-01']).toEqual([1]);
+    expect(result.readingHistory['2025-01-02']).toEqual([2]);
+  });
+
+  it('sets readingHistoryVersion to 2 in defaultProgress', () => {
+    expect(defaultProgress.readingHistoryVersion).toBe(2);
+  });
 });
 
 describe('saveProgress', () => {

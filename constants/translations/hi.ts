@@ -174,7 +174,7 @@ export const hi = {
   'settings.resetJourney': 'अपनी यात्रा रीसेट करें?',
   'settings.resetWarning': 'यह आपकी {{streak}}-दिन की लय और {{completed}} पूर्ण पाठ मिटा देगा। यह पूर्ववत नहीं किया जा सकता।',
   'settings.resetEverything': 'सब रीसेट करें',
-  'settings.version': 'संस्करण 1.0.0',
+  'settings.version': 'संस्करण 1.1.0',
   'settings.madeWith': 'ज्ञान के साधकों के लिए 🙏 से बनाया गया',
 
   // Offline Listening
@@ -259,4 +259,66 @@ export const hi = {
   'dev.progressSet': 'Progress set to Day {{day}}',
   'dev.invalidDay': 'Invalid Day',
   'dev.invalidRange': 'Please enter a number between 1 and 239',
+
+  // Auth Gate
+  'auth.saveProgress': 'अपनी आध्यात्मिक यात्रा सुरक्षित करें',
+  'auth.subtitle': 'अपनी प्रगति सुरक्षित रखने और किसी भी डिवाइस पर जारी रखने के लिए साइन इन करें',
+  'auth.continueGoogle': 'Google से जारी रखें',
+  'auth.continueApple': 'Apple से जारी रखें',
+  'auth.continueEmail': 'ईमेल से जारी रखें',
+  'auth.notNow': 'अभी नहीं',
+  'auth.requiredTitle': 'साइन इन आवश्यक है',
+  'auth.requiredSubtitle': 'अपने दैनिक पाठ जारी रखने और अपनी प्रगति सभी डिवाइसों पर सुरक्षित रखने के लिए साइन इन करें',
+  'auth.readingsPill': '{{completed}} पाठ पूरे',
+  'auth.streakPill': '{{streak}} दिन की लय',
+  'auth.readingsLabel': 'पठन',
+  'auth.streakLabel': 'दिन की लय',
+  'auth.progressSummary': '{{completed}} पाठ पूरे किए',
+
+  // Auth Errors
+  'auth.errorGeneric': 'कुछ गलत हो गया। कृपया पुनः प्रयास करें।',
+  'auth.errorNetwork': 'कृपया अपना इंटरनेट कनेक्शन जांचें',
+  'auth.errorDevBuildRequired': 'Google और Apple साइन इन के लिए डेवलपमेंट बिल्ड आवश्यक है (Expo Go नहीं)।',
+  'auth.errorInvalidEmail': 'कृपया एक मान्य ईमेल दर्ज करें।',
+  'auth.errorWrongPassword': 'पासवर्ड गलत है। कृपया पुनः प्रयास करें।',
+  'auth.errorEmailInUse': 'यह ईमेल पहले से उपयोग में है। कृपया साइन इन करें।',
+  'auth.errorWeakPassword': 'पासवर्ड कम से कम 6 अक्षरों का होना चाहिए।',
+  'auth.errorUserNotFound': 'इस ईमेल के लिए कोई खाता नहीं मिला।',
+
+  // Auth Screen
+  'auth.loginTitle': 'साइन इन',
+  'auth.signupTitle': 'खाता बनाएं',
+  'auth.emailLabel': 'ईमेल',
+  'auth.passwordLabel': 'पासवर्ड',
+  'auth.nameLabel': 'नाम',
+  'auth.signIn': 'साइन इन',
+  'auth.signUp': 'साइन अप',
+  'auth.forgotPassword': 'पासवर्ड भूल गए?',
+  'auth.sendResetEmail': 'रीसेट ईमेल भेजें',
+  'auth.toggleToSignUp': 'नए हैं? खाता बनाएं',
+  'auth.toggleToSignIn': 'पहले से खाता है? साइन इन करें',
+  'auth.or': 'या',
+
+  // Settings Profile
+  'auth.profileSignOut': 'साइन आउट',
+  'auth.profileSignInPrompt': 'अपनी प्रगति सुरक्षित रखने के लिए साइन इन करें',
+  'auth.profileSignInDetail': 'अपनी स्ट्रीक और पाठ सभी डिवाइसों पर सुरक्षित रखें',
+  'auth.signOutConfirmTitle': 'साइन आउट करें?',
+  'auth.signOutConfirmMessage': 'आपकी प्रगति सुरक्षित है और साइन इन करने पर वापस मिलेगी',
+  'auth.signOutConfirm': 'साइन आउट',
+  'auth.cancel': 'रद्द करें',
+  'auth.deleteAccount': 'खाता हटाएं',
+  'auth.deleteAccountTitle': 'खाता हटाएं?',
+  'auth.deleteAccountMessage': 'यह आपका खाता और सभी सिंक किया गया डेटा स्थायी रूप से हटा देगा। आपकी स्थानीय पठन प्रगति बनी रहेगी। यह पूर्ववत नहीं किया जा सकता।',
+  'auth.deleteAccountConfirm': 'हटाएं',
+  'auth.deleteAccountError': 'खाता हटा नहीं सका। कृपया पुनः प्रयास करें।',
+
+  // Sync
+  'auth.syncing': 'आपकी प्रगति सिंक हो रही है...',
+  'auth.syncComplete': 'प्रगति सभी डिवाइसों पर सिंक हो गई',
+
+  // Force Update
+  'update.title': 'एक बेहतर अनुभव आपका इंतज़ार कर रहा है',
+  'update.subtitle': 'अपनी यात्रा जारी रखने के लिए नवीनतम संस्करण में अपडेट करें',
+  'update.button': 'अभी अपडेट करें',
 } as const;
