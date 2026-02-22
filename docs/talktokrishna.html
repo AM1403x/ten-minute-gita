@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Talk to Krishna | 10 Minute Gita</title>
+<meta name="description" content="Have a personal conversation with Lord Krishna. Ask questions about life, dharma, karma, and the wisdom of the Bhagavad Gita.">
+<meta property="og:title" content="Talk to Krishna | 10 Minute Gita">
+<meta property="og:description" content="What would Krishna say to you? Ask anything about life, purpose, and the Gita's timeless wisdom.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tenminutegita.com/talktokrishna">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Talk to Krishna | 10 Minute Gita">
+<meta name="twitter:description" content="Have a personal conversation with Lord Krishna, drawing on the wisdom of the Bhagavad Gita.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/talktokrishna.css">
+</head>
+<body>
+
+<!-- Background aura -->
+<div class="bg-aura"></div>
+
+<!-- Floating particles -->
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+
+<!-- ==================== AUTH OVERLAY ==================== -->
+<div id="authOverlay" class="auth-overlay">
+  <div class="auth-card">
+    <div class="auth-om">&#2384;</div>
+    <h2>Welcome, dear friend</h2>
+    <p class="auth-subtitle">Before we begin, let me know who you are. Your conversations with Krishna are private and only yours.</p>
+
+    <button id="googleSignIn" class="auth-btn google-btn">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      Continue with Google
+    </button>
+
+    <div id="authError" class="auth-error"></div>
+
+    <a href="index.html" class="auth-back-link">&larr; Back to 10 Minute Gita</a>
+  </div>
+</div>
+
+<!-- ==================== CHAT APP ==================== -->
+<div id="chatApp" class="chat-app" style="display:none">
+
+  <!-- Header -->
+  <header class="chat-header">
+    <a href="index.html" class="back-link" title="Back to home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </a>
+
+    <div class="header-center">
+      <div class="krishna-avatar-sm">&#2384;</div>
+      <div class="header-title-text">
+        <h1>Talk to Krishna</h1>
+        <span class="header-subtitle">Wisdom of the Bhagavad Gita</span>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button id="voiceToggle" class="header-btn voice-toggle" title="Auto-play Krishna's voice">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 010 14.14" class="voice-wave-outer"></path>
+          <path d="M15.54 8.46a5 5 0 010 7.07" class="voice-wave-inner"></path>
+        </svg>
+      </button>
+      <div class="speed-control-wrapper">
+        <button id="speedBtn" class="header-btn speed-btn" title="Playback speed">
+          <span class="speed-label">1x</span>
+        </button>
+        <div id="speedPopover" class="speed-popover">
+          <div class="speed-presets">
+            <button class="speed-preset" data-speed="0.5">0.5x</button>
+            <button class="speed-preset" data-speed="0.75">0.75x</button>
+            <button class="speed-preset active" data-speed="1">1x</button>
+            <button class="speed-preset" data-speed="1.25">1.25x</button>
+            <button class="speed-preset" data-speed="1.5">1.5x</button>
+            <button class="speed-preset" data-speed="2">2x</button>
+          </div>
+        </div>
+      </div>
+      <button id="newChatBtn" class="header-btn" title="New conversation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </button>
+      <button id="historyBtn" class="header-btn" title="Conversations">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="8" y1="6" x2="21" y2="6"></line>
+          <line x1="8" y1="12" x2="21" y2="12"></line>
+          <line x1="8" y1="18" x2="21" y2="18"></line>
+          <line x1="3" y1="6" x2="3.01" y2="6"></line>
+          <line x1="3" y1="12" x2="3.01" y2="12"></line>
+          <line x1="3" y1="18" x2="3.01" y2="18"></line>
+        </svg>
+      </button>
+      <button id="userAvatarBtn" class="user-avatar-btn" title="Account"></button>
+    </div>
+  </header>
+
+  <!-- Messages area -->
+  <div id="messagesContainer" class="messages-container">
+    <div class="messages-inner" id="messagesInner">
+
+      <!-- Welcome state -->
+      <div id="welcomeState" class="welcome-state">
+        <div class="welcome-om">&#2384;</div>
+        <h2 class="welcome-heading">Welcome, dear friend.</h2>
+        <p class="welcome-sub">I am here. What weighs on your heart today?</p>
+        <div class="starter-prompts">
+          <button class="starter-btn">I'm feeling lost in life</button>
+          <button class="starter-btn">Explain karma to me simply</button>
+          <button class="starter-btn">I'm struggling with anger</button>
+          <button class="starter-btn">What is the meaning of dharma?</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Loading indicator -->
+  <div id="loadingIndicator" class="loading-indicator" style="display:none">
+    <div class="loading-avatar">&#2384;</div>
+    <div class="loading-bubble">
+      <span class="loading-om">&#2384;</span>
+      <span class="loading-text">Krishna is contemplating...</span>
+    </div>
+  </div>
+
+  <!-- Scroll to bottom pill -->
+  <div id="scrollPill" class="scroll-pill">&darr; Scroll to latest</div>
+
+  <!-- Input area -->
+  <div class="input-area">
+    <div class="input-inner">
+      <div class="input-wrapper">
+        <button id="micBtn" class="mic-btn" title="Voice input" style="display:none">
+          <svg class="mic-icon-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"></path>
+            <path d="M19 10v2a7 7 0 01-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+          <svg class="mic-icon-recording" viewBox="0 0 24 24" fill="currentColor" style="display:none">
+            <rect x="6" y="6" width="12" height="12" rx="2"></rect>
+          </svg>
+        </button>
+        <textarea id="messageInput" placeholder="Share what's on your mind..." rows="1" maxlength="2000"></textarea>
+        <button id="sendBtn" class="send-btn" title="Send message">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
+      </div>
+      <div id="charCount" class="char-count"></div>
+    </div>
+  </div>
+</div>
+
+<!-- User menu dropdown -->
+<div id="userMenu" class="user-menu">
+  <div class="user-menu-info">
+    <span id="userDisplayName" class="user-menu-name"></span>
+    <span id="userEmail" class="user-menu-email"></span>
+  </div>
+  <button id="signOutBtn" class="user-menu-btn">Sign Out</button>
+</div>
+
+<!-- Conversation history panel -->
+<div id="historyOverlay" class="history-overlay"></div>
+<div id="historyPanel" class="history-panel">
+  <div class="history-header">
+    <h3>Past Conversations</h3>
+    <button id="closeHistoryBtn" class="close-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+  <div id="historyList" class="history-list">
+    <div class="history-empty">No conversations yet.</div>
+  </div>
+</div>
+
+<!-- New chat confirm dialog -->
+<div id="confirmOverlay" class="confirm-overlay">
+  <div class="confirm-card">
+    <p>Start a fresh conversation? Your current chat will be saved and you can return to it anytime.</p>
+    <div class="confirm-actions">
+      <button id="confirmCancel" class="confirm-btn secondary">Cancel</button>
+      <button id="confirmNew" class="confirm-btn primary">New Chat</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast" class="toast"></div>
+
+<!-- Firebase SDK (compat mode, same version as android.html) -->
+<script src="https://www.gstatic.com/firebasejs/11.3.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.3.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.3.0/firebase-firestore-compat.js"></script>
+
+<script src="js/talktokrishna.js"></script>
+</body>
+</html>

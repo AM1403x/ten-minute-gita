@@ -1,0 +1,17 @@
+name = "talk-to-krishna"
+main = "worker.js"
+compatibility_date = "2024-12-01"
+
+[vars]
+ALLOWED_ORIGINS = "https://tenminutegita.com,https://www.tenminutegita.com,http://localhost:8000,http://127.0.0.1:8000"
+RATE_LIMIT_MAX = "60"
+RATE_LIMIT_WINDOW_SECONDS = "3600"
+FIREBASE_PROJECT_ID = "minute-gita"
+
+[[kv_namespaces]]
+binding = "TTS_CACHE"
+id = "23bfa1282961410e92e205b402ab1c80"
+
+# Secrets (set via `wrangler secret put`):
+# MINIMAX_API_KEY
+# SARVAM_API_KEY
