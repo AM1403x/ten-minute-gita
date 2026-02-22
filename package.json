@@ -23,7 +23,11 @@
       "<rootDir>/__tests__/setup.ts"
     ],
     "testPathIgnorePatterns": [
-      "<rootDir>/__tests__/setup.ts"
+      "<rootDir>/__tests__/setup.ts",
+      "<rootDir>/.claude/worktrees"
+    ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/.claude/worktrees"
     ]
   },
   "dependencies": {

@@ -12,7 +12,7 @@ export function ForceUpdateScreen({ storeUrl, benefits }: ForceUpdateInfo) {
   const { t } = useLanguage();
 
   const handleUpdate = () => {
-    Linking.openURL(storeUrl);
+    Linking.openURL(storeUrl).catch(() => {});
   };
 
   return (

@@ -56,8 +56,12 @@ export function DownloadManager() {
           text: t('settings.offline.clearAll'),
           style: 'destructive',
           onPress: async () => {
-            await deleteAll('en');
-            await deleteAll('hi');
+            try {
+              await deleteAll('en');
+              await deleteAll('hi');
+            } catch {
+              // Storage cleanup is best-effort
+            }
           },
         },
       ],

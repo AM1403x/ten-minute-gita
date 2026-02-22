@@ -2,15 +2,19 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import { logger } from '@/utils/logger';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+try {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
+} catch {
+  // Non-critical — swallow to avoid crashing every file that imports notifications
+}
 
 export const requestNotificationPermissions = async (): Promise<boolean> => {
   try {

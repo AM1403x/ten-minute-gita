@@ -305,7 +305,7 @@ describe('No leftover MP3 references', () => {
     for (const entry of entries) {
       const fullPath = path.join(dir, entry.name);
       if (entry.isDirectory()) {
-        if (['node_modules', '.expo', '.git', 'assets'].includes(entry.name)) continue;
+        if (['node_modules', '.expo', '.git', '.claude', 'assets'].includes(entry.name)) continue;
         results.push(...getSourceFiles(fullPath));
       } else if (SOURCE_EXTENSIONS.includes(path.extname(entry.name))) {
         if (fullPath !== THIS_FILE) {

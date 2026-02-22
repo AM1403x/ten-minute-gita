@@ -14,10 +14,9 @@
 
 set -euo pipefail
 
-BUCKET="10-minute-gita-audio"
+BUCKET="gita-audio"
 PROFILE="r2"
-# Replace with your Cloudflare account ID
-ACCOUNT_ID="${R2_ACCOUNT_ID:-YOUR_ACCOUNT_ID_HERE}"
+ACCOUNT_ID="${R2_ACCOUNT_ID:-7d9ee80cb675d44fa609a6ef487e31b8}"
 ENDPOINT="https://${ACCOUNT_ID}.r2.cloudflarestorage.com"
 
 AUDIO_BASE="$HOME/Desktop/gita_podcast"

@@ -46,7 +46,6 @@ export function useAudioPositionPersistence(
         hasListened: hasListenedRef.current,
         speed: speedRef.current,
       };
-      console.log('[AUDIO_DEBUG] persistence interval save:', JSON.stringify(saved));
       AsyncStorage.setItem(key, JSON.stringify(saved)).catch(() => {});
     }, SAVE_INTERVAL_MS);
 

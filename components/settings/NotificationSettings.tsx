@@ -70,7 +70,11 @@ export function NotificationSettings({
         Alert.alert(t('settings.permissionRequired'), t('settings.enableNotifications'));
       }
     } else {
-      await cancelAllNotifications();
+      try {
+        await cancelAllNotifications();
+      } catch {
+        // Best-effort cancellation
+      }
       onUpdateSettings({ notificationsEnabled: false });
     }
   };
@@ -84,7 +88,11 @@ export function NotificationSettings({
       onUpdateSettings({ notificationTime: newTime });
 
       if (settings.notificationsEnabled) {
-        await scheduleDailyReminder(newTime, currentSnippet, snippetTitle, streak);
+        try {
+          await scheduleDailyReminder(newTime, currentSnippet, snippetTitle, streak);
+        } catch {
+          // Best-effort reschedule
+        }
       }
     }
   };

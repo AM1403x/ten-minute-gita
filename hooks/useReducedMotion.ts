@@ -8,7 +8,7 @@ export function useReducedMotion(): boolean {
     let cancelled = false;
     AccessibilityInfo.isReduceMotionEnabled().then((val) => {
       if (!cancelled) setReduced(val);
-    });
+    }).catch(() => {});
     const sub = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduced);
     return () => {
       cancelled = true;
