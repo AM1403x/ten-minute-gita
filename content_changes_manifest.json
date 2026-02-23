@@ -442,6 +442,15 @@
       "old_length": 6237,
       "new_length": 9568,
       "audio_impact": "commentary section changed — needs re-record"
+    },
+    {
+      "snippet_id": 82,
+      "language": "en",
+      "field": "reflection",
+      "change_type": "rewritten",
+      "old_length": 1590,
+      "new_length": 1597,
+      "audio_impact": "reflection section changed — needs re-record"
     }
   ]
 }
