@@ -2,7 +2,7 @@
   "expo": {
     "name": "10 Minute Gita",
     "slug": "ten-minute-gita",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "tenminutegita",
