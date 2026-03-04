@@ -1,0 +1,537 @@
+{
+  "reviews": [
+    {
+      "id": 1,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Strong opening verse quote. Clay/elephant analogy is directly from Day 180 commentary. Ends with a provocative question. Good conversational tone."]
+    },
+    {
+      "id": 2,
+      "verdict": "rewrite",
+      "issues": [
+        "Too scholarly and dense for Twitter — reads like a lecture, not a conversation",
+        "Heavy Sanskrit (jnananam jnanam uttamam, mama sadharmyam) without sufficient context for a layman scrolling Twitter",
+        "Opening quote is a verse translation copy-paste, not a hook",
+        "Ends with a question but the build-up is too academic to earn it"
+      ],
+      "suggestions": [
+        "Lead with the provocative insight (you can become one with the Divine) rather than the verse quote",
+        "Reduce Sanskrit to one term max and explain it inline",
+        "Make the tone more second-person and direct, like tweet #1's style"
+      ]
+    },
+    {
+      "id": 3,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote 'Better indeed is knowledge than practice; better than knowledge is meditation...' is from Chapter 12, Verse 12.12, NOT Chapter 14, Verses 14.04-14.06",
+        "Day 181 (14.04-14.06) is about the three gunas binding the Self — this tweet has zero connection to the actual source content",
+        "No question or sharp insight at the end — just a flat declarative statement"
+      ],
+      "suggestions": [
+        "Rewrite entirely using actual Day 181 content about the three gunas as fundamental qualities that bind even the imperishable Self",
+        "Use the source's key insight: even Sattva (purity/goodness) creates bondage through attachment to happiness and knowledge"
+      ]
+    },
+    {
+      "id": 4,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 181 gunas teaching. Sanskrit is explained inline. The verse quote and guna analysis match the source. Tone is slightly lecture-y but within acceptable range for an evening long-form tweet."]
+    },
+    {
+      "id": 5,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'One who hates no being, who is friendly and compassionate...' is from Chapter 12, Verses 12.13-12.14 (the beloved devotee qualities), NOT Chapter 14, Verses 14.07-14.09",
+        "Day 182 (14.07-14.09) is about the mechanics of Rajas and Tamas binding the soul — this tweet has zero connection to the actual source content",
+        "No question or engaging ending"
+      ],
+      "suggestions": [
+        "Rewrite using actual Day 182 content about Rajas (passion/thirst/attachment to action) and Tamas (ignorance/laziness/sleep)",
+        "The source has great material: 'How often do you feel compelled to act, to achieve, to acquire? That restless drive is Rajas at work.'"
+      ]
+    },
+    {
+      "id": 6,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 182 content on Rajas and Tamas. Verse quote matches source. Asks a good reflective question. Sanskrit terms are explained."]
+    },
+    {
+      "id": 7,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'The body is called the field; one who knows it is the field-knower' is from Chapter 13, Verses 13.01-13.02 (Kshetra-Kshetrajna), NOT Chapter 14, Verses 14.10-14.12",
+        "Day 183 (14.10-14.12) is about the dynamic interplay of gunas competing for dominance — this tweet has zero connection to the actual source content"
+      ],
+      "suggestions": [
+        "Rewrite using actual Day 183 content about how gunas constantly compete — Sattva overcomes Rajas/Tamas, and vice versa",
+        "Source has good diagnostic: 'When light (knowledge) streams through ALL the gates of your body, Sattva is predominant'"
+      ]
+    },
+    {
+      "id": 8,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 183 guna interplay. Verse quote matches source. Good explanatory tone."]
+    },
+    {
+      "id": 9,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'What the field is, of what nature...' is from Chapter 13, Verses 13.03-13.04 (still Kshetra-Kshetrajna Yoga), NOT Chapter 14, Verses 14.13-14.15",
+        "Day 184 (14.13-14.15) is about the consequences of which guna predominates at death — this tweet has zero connection to the actual source content"
+      ],
+      "suggestions": [
+        "Rewrite using actual Day 184 content about Tamas symptoms (darkness, stagnation, folly, infatuation) and the profound consequence of which guna predominates at death",
+        "Source verse: 'Darkness, stagnation, folly and infatuation are the result of the dominance of Ignorance'"
+      ]
+    },
+    {
+      "id": 10,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 184 content. Verse quote matches source. Sanskrit terms are explained contextually. Solid evening tweet."]
+    },
+    {
+      "id": 11,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'The great elements, ego, intellect, unmanifest, the ten senses...' is from Chapter 13, Verses 13.05-13.06 (field components), NOT Chapter 14, Verses 14.16-14.18",
+        "Day 185 (14.16-14.18) is about the spiritual trajectory of each guna — those in Sattva rise, Rajas stay in the middle, Tamas descend. This tweet has zero connection to the actual content"
+      ],
+      "suggestions": [
+        "Rewrite using actual Day 185 content about the 'ladder of the mind' — Sattva takes you upward, Rajas keeps you running on a treadmill, Tamas pulls you down",
+        "Even Sattva is bondage — a key insight from this section"
+      ]
+    },
+    {
+      "id": 12,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 185 content. The 'treadmill' analogy is engaging. Verse quote and Sanskrit match source. Good ending insight about even Sattva being bondage."]
+    },
+    {
+      "id": 13,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'Absence of pride, unpretentiousness, non-injury, patience...' is from Chapter 13, Verses 13.07-13.11 (qualities of knowledge), NOT Chapter 14, Verses 14.19-14.21",
+        "Day 186 (14.19-14.21) is about the revolutionary insight that 'only the Qualities act and nothing else' — the shift from 'I did this' to 'the gunas did this'. This tweet completely misses that"
+      ],
+      "suggestions": [
+        "Rewrite using Day 186's key teaching: reframe 'I did this' as 'the gunas did this' — create space between you and your experience",
+        "Source has a great example: 'The one who says I shouldn't have gone to the movie before the exam is different from the one who went'"
+      ]
+    },
+    {
+      "id": 14,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 186. The practical exercise ('pause and reframe') is excellent. The movie example is engaging. Good question ending."]
+    },
+    {
+      "id": 15,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'Non-attachment, non-identification with son, wife, home...' is from Chapter 13, Verses 13.09-13.10 (qualities of knowledge), NOT Chapter 14, Verses 14.22-14.24",
+        "Day 187 (14.22-14.24) is about Krishna's revolutionary description of the gunatita — one who neither shuns nor craves any guna state. 'Radical acceptance' is the theme. This tweet misses it entirely"
+      ],
+      "suggestions": [
+        "Rewrite using Day 187's description of the liberated person who 'shuns not the Quality which is present, and longs not for that which is absent'",
+        "The acceptance teaching is distinctive and counterintuitive — great tweet material"
+      ]
+    },
+    {
+      "id": 16,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 187 content. 'Radical acceptance' framing is strong. Sanskrit is well-explained. Good scholarly depth for an evening long tweet."]
+    },
+    {
+      "id": 17,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'Unwavering devotion to me through exclusive yoga, resorting to solitary places...' is from Chapter 13, Verses 13.10-13.11, NOT Chapter 14, Verses 14.25-14.27",
+        "Day 188 (14.25-14.27) is about transcending the gunas through abandoning the sense of personal doership, and devotion as the path. This tweet misses the actual content"
+      ],
+      "suggestions": [
+        "Rewrite using Day 188's key teaching: 'sarvārambha-parityāgī' — abandoning all undertakings means giving up the SENSE of doership, not the actions themselves",
+        "The distinction between abandoning action vs abandoning doership is a powerful tweet-worthy insight"
+      ]
+    },
+    {
+      "id": 18,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 188 content. The 'sounds like death itself!' moment is engaging. Good clarification about doership vs. actions. Sanskrit explained inline."]
+    },
+    {
+      "id": 19,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'Constant reflection on Self-knowledge, seeing the purpose of truth-knowledge...' is from Chapter 13, Verses 13.11 (still qualities of knowledge), NOT Chapter 15, Verses 15.01-15.03",
+        "Day 189 (15.01-15.03) is about the Ashvattha tree — the cosmic inverted tree with roots above and branches below. This is one of the Gita's most famous images and the tweet completely misses it"
+      ],
+      "suggestions": [
+        "Rewrite using Day 189's Ashvattha tree metaphor — 'Life is like an upside-down tree with roots in the sky and branches reaching down'",
+        "The word 'Ashvattha' itself means 'that which does not remain the same tomorrow' — great hook material"
+      ]
+    },
+    {
+      "id": 20,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 189 Ashvattha tree teaching. The etymology of 'Ashvattha' is a strong hook. The 'planting roots deeper into ever-changing soil' analogy is engaging."]
+    },
+    {
+      "id": 21,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'I shall declare that which is to be known, knowing which one attains immortality—beginningless supreme Brahman...' is from Chapter 13, Verse 13.12, NOT Chapter 15, Verses 15.04-15.06",
+        "Day 190 (15.04-15.06) is about the path of no return and the qualifications to reach it. The tweet completely misses the actual content"
+      ],
+      "suggestions": [
+        "Rewrite using Day 190's teaching about the supreme destination: 'Having gone there, one never returns' — not a place but a state where the cycle of seeking finally ends",
+        "The qualifications (freed from pride/delusion, conquered love of sense objects) are practical and tweet-worthy"
+      ]
+    },
+    {
+      "id": 22,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 190 content about the path of no return. Verse quote matches. Good framing of destination as 'state of being' not a physical place."]
+    },
+    {
+      "id": 23,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'With hands and feet everywhere, eyes, heads, mouths everywhere...' is from Chapter 13, Verse 13.13, NOT Chapter 15, Verses 15.07-15.09",
+        "Day 191 (15.07-15.09) is about the jiva as an eternal fragment of the Divine — 'mamaivamsho jivaloke jivabhutah sanatanah'. This is one of the Gita's most important declarations and the tweet misses it"
+      ],
+      "suggestions": [
+        "Rewrite using Day 191's profound declaration: 'An eternal portion of Myself becomes the jiva in this world'",
+        "The 'space confined by walls becoming room space' analogy from the source is excellent tweet material"
+      ]
+    },
+    {
+      "id": 24,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 191. The 'mamaivamsho' verse is correctly quoted and explained. The 'space confined by walls' analogy is powerful. Strong tweet."]
+    },
+    {
+      "id": 25,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'Appearing to have sense qualities, yet devoid of senses, unattached yet supporting all...' is from Chapter 13, Verse 13.14, NOT Chapter 15, Verses 15.10-15.12",
+        "Day 192 (15.10-15.12) is about the contrast between the deluded and the wise — the ignorant cannot perceive the Self even as it departs at death. This tweet misses the actual content"
+      ],
+      "suggestions": [
+        "Rewrite using Day 192's teaching about the 'eye of wisdom' vs. the 'deluded' — 'The ignorant do not see that it is He Who is present in life and Who departs at death'",
+        "The 'watching a magic show without understanding the mechanism' analogy is good tweet material"
+      ]
+    },
+    {
+      "id": 26,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 192 content. Verse quote matches. The 'magic show' analogy is engaging. Good contrast between deluded and wise."]
+    },
+    {
+      "id": 27,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'Outside and inside beings, moving and unmoving, too subtle to be known...' is from Chapter 13, Verse 13.15, NOT Chapter 15, Verses 15.13-15.15",
+        "Day 193 (15.13-15.15) is about the Supreme Person sustaining all existence — entering the earth, becoming the moon to nourish plants, becoming digestive fire. This tweet misses the actual content"
+      ],
+      "suggestions": [
+        "Rewrite using Day 193's teaching about the Divine as sustainer at every level — cosmic (earth), natural (moon/plants), personal (digestive fire)",
+        "The source says 'This teaching dissolves the boundary between sacred and mundane' — powerful framing"
+      ]
+    },
+    {
+      "id": 28,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 193 content. Verse quote matches. The cosmic-to-personal scope is well-captured."]
+    },
+    {
+      "id": 29,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'Undivided yet existing as if divided in beings...' is from Chapter 13, Verse 13.16, NOT Chapter 15, Verses 15.16-15.18",
+        "Day 194 (15.16-15.18) is about the two Purushas (perishable and imperishable) and Purushottama (the Supreme Person beyond both). This tweet misses the actual content"
+      ],
+      "suggestions": [
+        "Rewrite using Day 194's crucial three-level distinction: perishable (all beings), imperishable (the unchanging witness), and beyond both (Purushottama)",
+        "This gives Chapter 15 its name — a significant teaching"
+      ]
+    },
+    {
+      "id": 30,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 194 content. The kshara/akshara/Purushottama framework is well-explained. Verse quote matches."]
+    },
+    {
+      "id": 31,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'I shall again declare the supreme knowledge, best of all knowledge...' is from Chapter 14, Verse 14.01 paraphrased, NOT Chapter 15, Verses 15.19-15.20",
+        "Day 195 (15.19-15.20) is the chapter's conclusion — 'whoever knows Me as the Supreme Person, without delusion, knows all there is to be known'. The tweet misses this",
+        "The ending 'Are you tired enough of bondage to receive it?' is dramatic but disconnected from the actual verse content"
+      ],
+      "suggestions": [
+        "Rewrite using Day 195's climactic declaration: knowing the Supreme Person (Purushottama) is knowing everything — this is 'the most secret teaching'",
+        "The word 'asammudha' (undeluded) is the key — our usual state IS delusion"
+      ]
+    },
+    {
+      "id": 32,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 195 content. Verse quote matches. The 'asammudha' insight is well-used. Good concluding tone for the chapter."]
+    },
+    {
+      "id": 33,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'Taking refuge in this knowledge, attaining identity with me, they are not born at creation nor disturbed at dissolution' is from Chapter 14, Verses 14.01-14.02 (not Ch 16), NOT Chapter 16, Verses 16.01-16.03",
+        "Day 196 (16.01-16.03) is about the twenty-six divine qualities beginning with fearlessness (abhayam). This tweet completely misses the actual content"
+      ],
+      "suggestions": [
+        "Rewrite using Day 196's list of divine qualities — fearlessness, clean living, concentration on wisdom, readiness to give, self-control",
+        "The insight that 'fear arises from ignorance' is a strong hook"
+      ]
+    },
+    {
+      "id": 34,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 196. The twenty-six divine qualities are correctly sourced. The insight about fear arising from ignorance is strong."]
+    },
+    {
+      "id": 35,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'My womb is the great Brahman; in that I place the seed...' is from Chapter 14, Verse 14.03, NOT Chapter 16, Verses 16.04-16.06",
+        "Day 197 (16.04-16.06) is about the six demonic qualities — hypocrisy, pride, insolence, cruelty, ignorance. This tweet completely misses the actual content"
+      ],
+      "suggestions": [
+        "Rewrite using Day 197's six demonic qualities: dambha (hypocrisy), darpa (arrogance), abhimana (self-conceit), krodha (anger), parushyam (harshness), ajnana (ignorance)",
+        "The source insight about how these are interconnected is powerful — 'when I feel incomplete within myself, I become arrogant to compensate'"
+      ]
+    },
+    {
+      "id": 36,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 197 content. The six demonic qualities are correctly listed and explained. The interconnection insight is strong."]
+    },
+    {
+      "id": 37,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'Whatever forms originate in any wombs, of those Brahman is the great womb, I am the seed-giving father' is from Chapter 14, Verse 14.04, NOT Chapter 16, Verses 16.07-16.09",
+        "Day 198 (16.07-16.09) is about the godless not knowing how to act or renounce — lacking purity, truth, and right principles of conduct. This tweet misses the actual content"
+      ],
+      "suggestions": [
+        "Rewrite using Day 198's teaching about confusion regarding right action (pravritti) and renunciation (nivritti)",
+        "The insight that this confusion was Arjuna's condition in Chapter 1 is a great callback — connects the teaching arc"
+      ]
+    },
+    {
+      "id": 38,
+      "verdict": "simplify",
+      "issues": [
+        "Accurate content but too dense for a quick read — opens with verse quote, immediately dives into Sanskrit terminology (pravritti, nivritti, saucha, achara, satya)",
+        "Lacks conversational hook — reads like a study guide",
+        "No engaging question or sharp ending"
+      ],
+      "suggestions": [
+        "Lead with the relatable insight: 'Not knowing what to do and what to refrain from — sound familiar?'",
+        "Reduce Sanskrit terms, explain the one or two you keep",
+        "Add a question ending: 'What are you engaging in that you should be walking away from?'"
+      ]
+    },
+    {
+      "id": 39,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'Sattva, rajas, tamas—these qualities born of prakriti bind the imperishable embodied one to the body' is from Chapter 14, Verse 14.05, NOT Chapter 16, Verses 16.10-16.12",
+        "Day 199 (16.10-16.12) is about insatiable desires, false conceptions founded on delusion, and unholy purposes. This tweet misses the actual content"
+      ],
+      "suggestions": [
+        "Rewrite using Day 199's teaching about insatiable desire (dushpuram kamam) — 'A natural desire is fulfilled and ends. But obsessive craving can never be satisfied because it arises from inner emptiness'",
+        "This is extremely relatable content for a modern audience"
+      ]
+    },
+    {
+      "id": 40,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 199. The distinction between natural desire and obsessive craving is well-drawn. Sanskrit explained. The 'insatiable' keyword anchors the teaching."]
+    },
+    {
+      "id": 41,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'Sattva, being pure, illuminating, free from sickness, binds by attachment to happiness and knowledge' is from Chapter 14, Verse 14.06, NOT Chapter 16, Verses 16.13-16.15",
+        "Day 200 (16.13-16.15) is about the inner monologue of the ego-driven mind — 'This I have gained today; tomorrow I will gratify another desire.' This tweet misses the actual content"
+      ],
+      "suggestions": [
+        "Rewrite using Day 200's devastating ego monologue: 'I have gained this today, I will get more tomorrow. This wealth is mine, more shall be mine soon.' Ask: 'Which of these statements resonate uncomfortably with your own thoughts?'",
+        "This is some of the Gita's most psychologically piercing content — perfect for Twitter"
+      ]
+    },
+    {
+      "id": 42,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 200. The ego monologue is chilling and well-presented. 'Read these statements slowly' is a great instruction. Good introspective ending."]
+    },
+    {
+      "id": 43,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'Rajas, know to be of the nature of passion, source of thirst and attachment...' is from Chapter 14, Verse 14.07, NOT Chapter 16, Verses 16.16-16.18",
+        "Day 201 (16.16-16.18) is about being 'bewildered by many fancies' and 'entangled in the net of delusion'. This tweet misses the actual content"
+      ],
+      "suggestions": [
+        "Rewrite using Day 201's teaching about aneka-chitta-vibhrantah — the scattered mind chasing multiple desires simultaneously",
+        "The insight that naraka (hell) is 'not a place but a state of constant anxiety, dissatisfaction, and inner torment' is powerful and counterintuitive"
+      ]
+    },
+    {
+      "id": 44,
+      "verdict": "simplify",
+      "issues": [
+        "Accurate content but very dense with Sanskrit terms (aneka-chitta-vibhrantah, moha-jala-samavritah, prasaktah kama-bhogashu, naraka)",
+        "A layman would struggle with four Sanskrit terms in one tweet",
+        "The psychological insight is strong but buried under terminology"
+      ],
+      "suggestions": [
+        "Keep the core insight about the scattered mind and hell-as-inner-state",
+        "Reduce to one Sanskrit term max, explain it naturally",
+        "Lead with the relatable hook: 'That scattered mind chasing 10 things at once — that IS the suffering'"
+      ]
+    },
+    {
+      "id": 45,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Good short tweet. Direct question ending. Matches @10minutegita voice well. Day 202 content accurately represented — the three gates of darkness (lust, anger, greed)."]
+    },
+    {
+      "id": 46,
+      "verdict": "simplify",
+      "issues": [
+        "Accurate content but the 'career specialization' analogy, while clever, may land oddly when discussing cruelty and hatred",
+        "The teaching is important but the presentation is dense — 'persistent demonic tendencies' and 'natural law' language feels preachy",
+        "Verse reference about 'the dregs of mankind' is a harsh quote to lead a tweet with"
+      ],
+      "suggestions": [
+        "Soften the opening — don't lead with 'dregs of mankind'",
+        "Frame as patterns/habits rather than 'demonic tendencies' — more accessible",
+        "The core insight (what you practice, you become) is universal and doesn't need the harsh framing"
+      ]
+    },
+    {
+      "id": 47,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'When the embodied one transcends these three gunas from which the body arises...' is from Chapter 14, Verse 14.20, NOT Chapter 16, Verses 16.22-16.24",
+        "Day 203 (16.22-16.24) is about the three gates to darkness (lust, anger, greed) and how avoiding them leads to liberation. This tweet misses the actual content"
+      ],
+      "suggestions": [
+        "Rewrite using Day 203's three gates of darkness: lust (kama), anger (krodha), greed (lobha)",
+        "Source insight: 'liberation not as escape from the world but as freedom within it' — powerful framing",
+        "The clarification that such a person still has desires but isn't driven by compulsion is nuanced and tweet-worthy"
+      ]
+    },
+    {
+      "id": 48,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 203 content. The three gates of darkness are correctly sourced. The nuance about 'liberation within the world' is well-captured. Good ending."]
+    },
+    {
+      "id": 49,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'With roots above and branches below, the Ashvattha tree...' is from Chapter 15, Verse 15.01 (Day 189), NOT Chapter 17, Verses 17.01-17.03",
+        "Day 204 (17.01-17.03) is about the three types of faith — 'As is the faith, so is the person' (yo yacchraddhaḥ sa eva saḥ). This tweet completely misses the actual content",
+        "The Ashvattha tree was already correctly covered in tweet #20 for Day 189 — this is a duplicate topic"
+      ],
+      "suggestions": [
+        "Rewrite using Day 204's teaching about faith (shraddha) — your faith isn't just what you intellectually believe but the deep orientation of your entire being",
+        "The insight that faith arises from svabhava (inherent nature) is powerful"
+      ]
+    },
+    {
+      "id": 50,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 204 content. The faith teaching is well-presented. The verse quote matches source. Good explanation of shraddha as deeper than intellectual belief."]
+    },
+    {
+      "id": 51,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'Below and above spread its branches, nourished by the gunas; sense objects are its shoots...' is from Chapter 15, Verse 15.02 (Day 189), NOT Chapter 17, Verses 17.04-17.06",
+        "Day 205 (17.04-17.06) is about how different types of people worship differently based on their guna-nature, and a warning about misguided extreme austerities. This tweet misses the actual content"
+      ],
+      "suggestions": [
+        "Rewrite using Day 205's teaching about the three types of worship: 'The Pure worship the true God; the Passionate, the powers of wealth and magic; the Ignorant, the spirits of the dead'",
+        "The warning about extreme austerities driven by ego is compelling content"
+      ]
+    },
+    {
+      "id": 52,
+      "verdict": "simplify",
+      "issues": [
+        "Accurate content but truncated — the tweet ends abruptly without a concluding insight or question",
+        "Heavy with Sanskrit terms (dambha, ahankara, kama, raga) without full explanation",
+        "Missing the @10minutegita voice — no second-person engagement, no provocative question"
+      ],
+      "suggestions": [
+        "Add a strong ending question or insight",
+        "Reduce Sanskrit — keep the teaching's substance but in plain English",
+        "Make it personal: 'What are you worshipping? And is it because of genuine devotion or the need to be seen?'"
+      ]
+    },
+    {
+      "id": 53,
+      "verdict": "rewrite",
+      "issues": [
+        "MISATTRIBUTION: The quote about 'Its form is not perceived here—neither end, nor beginning, nor continuance. Having cut this firm-rooted tree with the strong axe of non-attachment...' is from Chapter 15, Verse 15.03 (Day 189), NOT Chapter 17, Verses 17.07-17.09",
+        "Day 206 (17.07-17.09) is about the threefold nature of food — sattvic, rajasic, and tamasic foods. This tweet completely misses the actual content",
+        "This is the THIRD time Ashvattha tree content appears in short tweets (#49, #51, #53) when it belongs only in Day 189"
+      ],
+      "suggestions": [
+        "Rewrite using Day 206's teaching about food: 'even something as basic as food preference reveals the texture of your mind'",
+        "Sattvic foods are juicy/wholesome/pleasing; rajasic are bitter/sour/overly hot; tamasic are stale/tasteless — very relatable content"
+      ]
+    },
+    {
+      "id": 54,
+      "verdict": "pass",
+      "issues": [],
+      "suggestions": ["Accurately represents Day 206 content about threefold food. The 'even something as basic as food preference reveals the texture of your mind' insight is strong. Good engagement."]
+    }
+  ],
+  "summary": {
+    "total": 54,
+    "pass": 27,
+    "rewrite": 23,
+    "simplify": 4,
+    "rewrite_and_simplify": 0,
+    "critical_pattern": "ALL 23 rewrites share the same root cause: the short (morning) tweets for odd-numbered tweet IDs systematically pull quotes from Chapter 13 (Kshetra-Kshetrajna Yoga) instead of the correct chapter content. This appears to be a generation bug where the short tweet generator used a Chapter 13 verse index offset. The long (evening) tweets are consistently accurate.",
+    "accuracy_issues": "23 tweets have verse misattributions — quotes attributed to Ch 14-17 actually belong to Ch 12-15. The short tweets appear to draw from a different verse lookup than the long tweets.",
+    "voice_issues": "Several long tweets that pass accuracy are still dense and scholarly. 4 flagged for simplification.",
+    "strongest_tweets": [1, 14, 18, 20, 24, 42, 45],
+    "weakest_tweets": [3, 5, 7, 49, 53]
+  }
+}
