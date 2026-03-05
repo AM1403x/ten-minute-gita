@@ -17,7 +17,10 @@ import json
 import os
 import sys
 import argparse
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+
+# Schedule times are in IST — always compare in IST
+IST = timezone(timedelta(hours=5, minutes=30))
 from pathlib import Path
 
 # Add project root to path
@@ -235,7 +238,7 @@ def cmd_scheduled(dry: bool):
     # Find posted schedule IDs
     posted_ids = {p["schedule_id"] for p in history["posts"] if "schedule_id" in p}
 
-    now = datetime.now()
+    now = datetime.now(IST).replace(tzinfo=None)  # Current time in IST (naive for comparison)
     now_str = now.strftime("%Y-%m-%d %H:%M")
 
     due_tweet = None
@@ -293,7 +296,7 @@ def cmd_show_schedule():
     history = load_history()
     posted_ids = {p["schedule_id"] for p in history["posts"] if "schedule_id" in p}
 
-    now = datetime.now()
+    now = datetime.now(IST).replace(tzinfo=None)
 
     print(f"\n📅 Tweet Schedule ({len(schedule['tweets'])} total)\n")
     print(f"{'#':>3} {'Date':>10} {'Time':>5} {'Day':>4} {'Type':>5} {'Chars':>5} {'Status':>8}")

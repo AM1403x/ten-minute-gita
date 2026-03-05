@@ -8,6 +8,14 @@
       "timestamp": "2026-03-04T19:51:25.695225",
       "chars": 207,
       "note": "Manual test post (original Day 180 short reflection)"
+    },
+    {
+      "schedule_id": 1,
+      "day": 196,
+      "tweet_id": "2029545601856352577",
+      "type": "short",
+      "timestamp": "2026-03-05T18:42:33.509007",
+      "chars": 358
     }
   ]
 }
