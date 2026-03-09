@@ -1,0 +1,423 @@
+{
+  "reviewed_at": "2026-03-08T19:46:11.839814",
+  "total_reviewed": 60,
+  "rewritten": [
+    {
+      "id": 57,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 230 (Ch18, 18.49 - 18.51) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 171,
+      "after_chars": 439
+    },
+    {
+      "id": 59,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 232 (Ch18, 18.55 - 18.57) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 196,
+      "after_chars": 383
+    },
+    {
+      "id": 61,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 234 (Ch18, 18.61 - 18.63) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 204,
+      "after_chars": 393
+    },
+    {
+      "id": 63,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 225 (Ch18, 18.34 - 18.36) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 218,
+      "after_chars": 351
+    },
+    {
+      "id": 65,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 214 (Ch18, 18.01 - 18.03) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 229,
+      "after_chars": 399
+    },
+    {
+      "id": 67,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 219 (Ch18, 18.16 - 18.18) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 181,
+      "after_chars": 387
+    },
+    {
+      "id": 69,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 224 (Ch18, 18.31 - 18.33) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 169,
+      "after_chars": 400
+    },
+    {
+      "id": 71,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 209 (Ch17, 17.16 - 17.18) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 197,
+      "after_chars": 410
+    },
+    {
+      "id": 73,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 217 (Ch18, 18.10 - 18.12) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 200,
+      "after_chars": 386
+    },
+    {
+      "id": 75,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 213 (Ch17, 17.28 - 17.28) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 200,
+      "after_chars": 381
+    },
+    {
+      "id": 77,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 215 (Ch18, 18.04 - 18.06) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 190,
+      "after_chars": 390
+    },
+    {
+      "id": 79,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 227 (Ch18, 18.40 - 18.42) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 199,
+      "after_chars": 424
+    },
+    {
+      "id": 81,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 212 (Ch17, 17.25 - 17.27) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 250,
+      "after_chars": 388
+    },
+    {
+      "id": 83,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 235 (Ch18, 18.64 - 18.66) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 279,
+      "after_chars": 409
+    },
+    {
+      "id": 85,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 220 (Ch18, 18.19 - 18.21) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 245,
+      "after_chars": 399
+    },
+    {
+      "id": 87,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 223 (Ch18, 18.28 - 18.30) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 228,
+      "after_chars": 457
+    },
+    {
+      "id": 89,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 207 (Ch17, 17.10 - 17.12) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 250,
+      "after_chars": 397
+    },
+    {
+      "id": 91,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 222 (Ch18, 18.25 - 18.27) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 208,
+      "after_chars": 381
+    },
+    {
+      "id": 93,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 226 (Ch18, 18.37 - 18.39) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 245,
+      "after_chars": 428
+    },
+    {
+      "id": 95,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 233 (Ch18, 18.58 - 18.60) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 204,
+      "after_chars": 362
+    },
+    {
+      "id": 97,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 210 (Ch17, 17.19 - 17.21) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 224,
+      "after_chars": 401
+    },
+    {
+      "id": 99,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 228 (Ch18, 18.43 - 18.45) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 221,
+      "after_chars": 395
+    },
+    {
+      "id": 101,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 218 (Ch18, 18.13 - 18.15) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 206,
+      "after_chars": 338
+    },
+    {
+      "id": 103,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 221 (Ch18, 18.22 - 18.24) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 214,
+      "after_chars": 357
+    },
+    {
+      "id": 105,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 211 (Ch17, 17.22 - 17.24) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 266,
+      "after_chars": 416
+    },
+    {
+      "id": 107,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 231 (Ch18, 18.52 - 18.54) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 213,
+      "after_chars": 404
+    },
+    {
+      "id": 109,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 229 (Ch18, 18.46 - 18.48) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 213,
+      "after_chars": 406
+    },
+    {
+      "id": 111,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 216 (Ch18, 18.07 - 18.09) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 258,
+      "after_chars": 443
+    },
+    {
+      "id": 113,
+      "reason": "Content referenced wrong chapter/verses. Tweet for Day 208 (Ch17, 17.13 - 17.15) had content from different verses. Rewrote to match actual content.",
+      "before_chars": 237,
+      "after_chars": 375
+    }
+  ],
+  "humanized": [
+    {
+      "id": 55,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 56,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 57,
+      "changes": "made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 58,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 59,
+      "changes": "removed em dashes; made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 60,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 61,
+      "changes": "made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 62,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 63,
+      "changes": "removed em dashes; made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 64,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 65,
+      "changes": "removed em dashes; made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 66,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 67,
+      "changes": "made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 68,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 69,
+      "changes": "removed em dashes; made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 70,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 71,
+      "changes": "removed em dashes; made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 72,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 73,
+      "changes": "removed em dashes; made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 74,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 75,
+      "changes": "removed em dashes; made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 76,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 77,
+      "changes": "removed em dashes; made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 78,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 79,
+      "changes": "removed em dashes; made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 80,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 81,
+      "changes": "removed em dashes; made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 82,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 83,
+      "changes": "removed em dashes; made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 84,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 85,
+      "changes": "removed em dashes; made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 86,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 87,
+      "changes": "removed em dashes; made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 88,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 89,
+      "changes": "removed em dashes; made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 90,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 91,
+      "changes": "made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 92,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 93,
+      "changes": "removed em dashes; made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 94,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 95,
+      "changes": "removed em dashes; made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 96,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 97,
+      "changes": "made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 98,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 99,
+      "changes": "made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 100,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 101,
+      "changes": "made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 102,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 103,
+      "changes": "removed em dashes; made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 104,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 105,
+      "changes": "removed em dashes; made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 106,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 107,
+      "changes": "removed em dashes; made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 108,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 109,
+      "changes": "made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 110,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 111,
+      "changes": "made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 112,
+      "changes": "made conversational, direct, second-person; added contractions"
+    },
+    {
+      "id": 113,
+      "changes": "removed em dashes; made conversational, direct, second-person; added contractions; corrected chapter/verse attribution"
+    },
+    {
+      "id": 114,
+      "changes": "made conversational, direct, second-person; added contractions"
+    }
+  ],
+  "unchanged": []
+}
