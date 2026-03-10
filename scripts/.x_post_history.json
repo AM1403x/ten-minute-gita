@@ -88,6 +88,14 @@
       "type": "long",
       "timestamp": "2026-03-09T15:31:27.527895",
       "chars": 665
+    },
+    {
+      "schedule_id": 11,
+      "day": 186,
+      "tweet_id": "2031223459892568508",
+      "type": "short",
+      "timestamp": "2026-03-10T04:19:45.925818",
+      "chars": 316
     }
   ]
 }
